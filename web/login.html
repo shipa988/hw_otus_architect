@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>`Login Page`</title>
+    <link rel="stylesheet" href="static/styles/login.css" />
+</head>
+<body>
+{{if .Err}}
+<div>
+    <h2>You must login!</h2>
+    <p style="color: #ff0000;"><b>Wrong user or password. You may sign in.</b></p>
+</div>
+{{else}}
+<div></div>
+{{end}}
+<form method="POST">
+    <input type="text" placeholder="Username" name="user" /><br />
+    <input type="password" placeholder="Password" name="pass" /><br />
+    <button>Login</button>
+    <input type="button" onclick="location.href='/signup';" value="or Sign Up" />
+</form>
+</body>
+</html>

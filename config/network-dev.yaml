@@ -1,0 +1,15 @@
+log:
+  file:  ./social_network_core.log
+name: "social_network_core"
+env: "dev"
+api:
+  port:  4444
+  readtimeout: 2000
+  writetimeout: 2000
+db:
+  provider: "mysql"
+  address: "localhost"
+  port: "8123"
+  login: "default"
+  password: ""
+  name: "sncore"

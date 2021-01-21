@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9c41e8e2-c454-4109-8ec5-aace502a477b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/data/config/config.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/data/controller/log/log.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/data/controller/server/handler.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/data/controller/server/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/data/controller/server/util.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/data/repository/mysql/repo.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/data/repository/mysql/sql/1_script.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/entity/audit.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/entity/error.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/entity/user.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/usecase/interactor.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/usecase/networkcore.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/404.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/friends.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/static/styles/friends.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/static/styles/login.css" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go Application" />
+        <option value="HTML File" />
+        <option value="CSS File" />
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../../../Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1n5xEQEM0uqX0KhmCJHn8NXHtsE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/web/static/styles" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web\static\styles" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\web" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\data\controller\log" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\web\static" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\web" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\data\controller\server" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\data\public" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9c41e8e2-c454-4109-8ec5-aace502a477b" name="Default Changelist" comment="" />
+      <created>1610693641016</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1610693641016</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
