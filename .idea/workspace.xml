@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9c41e8e2-c454-4109-8ec5-aace502a477b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config/network-heroku.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="9c41e8e2-c454-4109-8ec5-aace502a477b" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,13 +48,13 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/config" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\config" />
       <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\config" />
       <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\domain\entity" />
       <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web\static\js" />
       <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web" />
