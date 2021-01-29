@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9c41e8e2-c454-4109-8ec5-aace502a477b" name="Default Changelist" comment="" />
+    <list default="true" id="9c41e8e2-c454-4109-8ec5-aace502a477b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Dockerfile-prod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/data/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/data/app/app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/data/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/data/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/search.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/main.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -71,7 +80,7 @@
     <configuration name="go build github.com/shipa988/hw_otus_architect" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="hw_otus_architect" />
       <working_directory value="$PROJECT_DIR$" />
-      <parameters value="--config=c:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\config/network-dev.yaml --logdest std --loglevel debug" />
+      <parameters value="--config=c:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\config/network-heroku.yaml --logdest std --loglevel debug" />
       <kind value="PACKAGE" />
       <filePath value="$PROJECT_DIR$/main.go" />
       <package value="github.com/shipa988/hw_otus_architect" />
@@ -100,5 +109,12 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="GoApplicationRunConfiguration">
+        <watch expression="surname" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

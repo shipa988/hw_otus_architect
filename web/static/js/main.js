@@ -1,24 +1,24 @@
 var lastid=0;
 function lazyLoad(div,isfriend,name,surname){
 
-    if((div.scrollHeight-div.offsetHeight) <= div.scrollTop+10){
+    if((div.scrollHeight-div.offsetHeight) <= div.scrollTop){
         var i=0, j=0;
         function animFn(){
             i++;
-            if(i%15==1){
+            if(i%5==1){
                 j++;
-                if(j%15==1){
+                if(j%7==1){
                     loadfriends(isfriend,name,surname)
                 }
                 else{
-                    setTimeout(animFn, 10);
+                    setTimeout(animFn, 5);
                 }
             }
             else{
-                setTimeout(animFn, 10);
+                setTimeout(animFn, 5);
             }
         }
-        setTimeout(animFn, 10);
+        setTimeout(animFn, 5);
     }
 }
 function loadfriends(isfriends,name,surname){

@@ -26,28 +26,13 @@ func NewNetworkApp() *NetworkApp {
 }
 func (p *NetworkApp) Start(cfg *config.Config) (err error) {
 	ctx, cancel := context.WithCancel(context.Background())
-
-/*	stanQueue := lib.NewSTANQueue(&cfg.StanConnection, &cfg.NatsConnection)
-	err=stanQueue.Connect(ctx)
-	if err != nil {
-		cancel()
-		return errors.Wrap(err, StartErr)
-	}
-	stanBroker := queue.NewStanBroker(stanQueue)
-	//tnt for subid counter
-	/*var tnt lib.TNTObj
-	if !tnt.Connect(&cfg.TarantoolConnection) {
-		cancel()
-		return errors.Wrap(errors.New("can't connect to Tarantool"), StartErr)
-	}*/
-	//publisher := usecase.NewPublisherInteractor(stanBroker/*,&tnt*/)*/
 	repo:=mysql.NewMySqlRepo()
 	err=repo.Connect(ctx,cfg.DB)
 	if err != nil {
 		return errors.Wrapf(err, ErrStart)
 	}
  	core:=usecase.NewInteractor(repo,repo,repo,15)
-	server := server.NewHttpServer(net.JoinHostPort("0.0.0.0",cfg.API.Port),core)
+	server := server.NewHttpServer(net.JoinHostPort("0.0.0.0",cfg.Port),core)
 
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
@@ -62,11 +47,6 @@ func (p *NetworkApp) Start(cfg *config.Config) (err error) {
 	<-c
 	cancel()
 	server.StopServe()
-	/*if err != nil {
-		log.Error(errors.Wrap(err, StartErr))
-		return
-	}
-	stanQueue.Disconnect(ctx)*/
 	wg.Wait()
 	return nil
 }

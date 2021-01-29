@@ -8,13 +8,13 @@ type Config struct {
 	Env                 string             `yaml:"env"`//prod or dev
 	API      API    `yaml:"api"`
 	DB       DB     `yaml:"db"`
+	Port           string        `yaml:"port"`
 }
 type Log struct {
 	File  string `yaml:"file"`
 }
 
 type API struct {
-	Port           string        `yaml:"port"`
 	ReadTimeoutMs  time.Duration `yaml:"readtimeout"`
 	WriteTimeoutMs time.Duration `yaml:"writetimeout"`
 }

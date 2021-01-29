@@ -25,7 +25,7 @@ lint: prepare_lint fmt tidy
 fmt:
 	go fmt ./...
 run: dep_install
-	go run main.go --config=config/network-dev.yaml --logdest std --loglevel debug
+	go run main.go --config=config/network-heroku.yaml --logdest std --loglevel debug
 build: dep_install
 	go build -o ncmonolit.exe  main.go
 start:
