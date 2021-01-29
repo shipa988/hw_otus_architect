@@ -1,0 +1,28 @@
+version: "2.2"
+
+services:
+  ncmonolit:
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 80:4444
+  db:
+    image: mysql:latest
+    volumes:
+      - my-db:/var/lib/mysql
+      - ${DBSCHEMAPATH}:/docker-entrypoint-initdb.d
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      TZ: Europe/Moscow
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: networkcore
+      MYSQL_USER: user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+volumes:
+  my-db:

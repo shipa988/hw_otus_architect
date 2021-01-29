@@ -1,0 +1,34 @@
+{{block "main_header" .}}{{end}}
+<h2>{{.Title}}</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<table>
+    <tr>
+        <td><input id="searchname" type="search" placeholder="Name..." name="name"></td>
+        <td><input id="searchsurname" type="search" placeholder="Second name..." name="surname"></td>
+        <td><input id="searchbutton" type="button" class="form-submit" value="Search"/></td>
+    </tr>
+</table>
+<!--<form class="example" id="searchform">
+    <input id="searchname" type="text" placeholder="Search.." name="name">
+    <input id="searchsurname" type="text" placeholder="Search.." name="surname">
+    <input type="submit" class="form-submit" value="Go"/>
+</form>-->
+<br>
+<div id="contDiv"  onscroll="lazyLoad(this,false)">
+    <ul id='friend-list' class="list-group">
+    </ul>
+</div>
+<script src="static/js/main.js"></script>
+<script>
+    document.getElementById('searchbutton').onclick = function () {
+        lastid=0
+        var ul=document.getElementById('friend-list')
+        while (ul.firstChild) {
+            ul.removeChild(ul.lastChild);
+        }
+        var name=document.getElementById('searchname').value
+        var surname=document.getElementById('searchsurname').value
+        loadfriends(false,name,surname)
+    };
+</script>
+{{block "main_footer" .}}{{end}}

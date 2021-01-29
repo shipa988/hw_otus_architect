@@ -1,0 +1,29 @@
+{{block "main_header" .}}{{end}}
+<h2 class="form-title">{{.Title}}</h2>
+<div></div>
+<form method="POST">
+    <div class="form-group">
+        <input type="text" name="name" id="name" placeholder="Name" value={{if .Name}}{{.Name}}{{end}}>
+    </div>
+    <div class="form-group">
+        <input type="text" name="surname" id="surname" placeholder="Second Name" value={{if .SurName}}{{.SurName}}{{end}}>
+    </div>
+    <div class="form-group">
+        <input type="number" name="age" id="age" placeholder="Age" value={{if .Age}}{{.Age}}{{end}}>
+    </div>
+    <div class="form-group">
+        <input type="text" name="city" id="city" placeholder="City" value={{if .City}}{{.City}}{{end}}>
+    </div>
+    <div class="form-group">
+        <input type="text" name="interests" id="interests" placeholder="Interests" value={{if .Interest}}{{.Interest}}{{end}}>
+    </div>
+    <span>Gender</span>
+    <br>
+    <input type="radio" name="gender" value="male" {{if .Gen}}{{if eq .Gen "Male"}} checked {{end}}{{end}} > Male
+    <input type="radio" name="gender" value="female" {{if .Gen}}{{if eq .Gen "Female"}} checked {{end}}{{end}} > Female
+    <input type="radio" name="gender" value="other" {{if .Gen}}{{if eq .Gen "Other"}} checked {{end}}{{end}}> Other
+    <div class="form-group form-button">
+        <input type="submit" name="save" id="save" class="form-submit" value="Save">
+    </div>
+</form>
+{{block "main_footer" .}}{{end}}

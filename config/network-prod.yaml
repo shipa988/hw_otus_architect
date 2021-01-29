@@ -8,8 +8,8 @@ api:
   writetimeout: 2000
 db:
   provider: "mysql"
-  address: "localhost"
-  port: "8123"
-  login: "default"
-  password: ""
-  name: "sncore"
+  address: "db"
+  port: "3306"
+  login: "user"
+  password: "userpw"
+  name: "networkcore"

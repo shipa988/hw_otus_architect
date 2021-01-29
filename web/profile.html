@@ -1,0 +1,72 @@
+{{block "main_header" .}}{{end}}
+<h2 class="form-title">{{.Title}}</h2>
+<div></div>
+<div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" disabled name="name" id="name" placeholder="Name" value={{if .Name}}{{.Name}}{{end}}>
+</div>
+<div class="form-group">
+    <label for="name">Second Name</label>
+    <input type="text" disabled name="surname" id="surname" placeholder="Second Name" value={{if .SurName}}{{.SurName}}{{end}}>
+</div>
+<div class="form-group">
+    <label for="name">Age</label>
+    <input type="number" disabled name="age" id="age" placeholder="Age" value={{if .Age}}{{.Age}}{{end}}>
+</div>
+<div class="form-group">
+    <label for="name">City</label>
+    <input type="text" disabled name="city" id="city" placeholder="City" value={{if .City}}{{.City}}{{end}}>
+</div>
+<div class="form-group">
+    <label for="name">Interests</label>
+    <input type="text" disabled name="interests" id="interests" placeholder="Interests" value={{if .Interest}}{{.Interest}}{{end}}>
+</div>
+<div class="form-group">
+    <label for="name">Gender</label>
+    <input type="text" disabled name="gender" id="gender" placeholder="Gender" value={{if .Gen}}{{.Gen}}{{end}}>
+</div>
+{{if .IsFriend}}
+<i onclick="myFunction(this)" style="color:#b72e25 " class="subscribe fa fa-reply">Unsubscribe</i>
+{{else}}
+<i onclick="myFunction(this)" style="color:#2e6297 " class="subscribe fa fa-handshake-o">Subscribe</i>
+{{end}}
+<script>
+    function myFunction(x) {
+        if (x.innerHTML == "Subscribe") {
+            subscribe(true,x)
+            return;
+        }
+        subscribe(false,x)
+    }
+
+    function subscribe(y,x){
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.addEventListener("readystatechange", function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                   if (y){
+                       x.innerHTML = "Unsubscribe";
+                       x.classList.remove("fa-handshake-o");
+                       x.classList.add("fa-reply");
+                       x.style['color'] = '#b72e25';
+                   }else {
+                       x.innerHTML = "Subscribe";
+                       x.classList.remove("fa-reply");
+                       x.classList.add("fa-handshake-o");
+                       x.style['color'] = '#2e6297';
+                   }
+                }
+            }
+        });
+        if (y) {
+            xhr.open("GET", "/subscribe?yes=1&id=" + {{.Id}});
+        } else {
+            xhr.open("GET", "/subscribe?yes=0&id=" + {{.Id}});
+        }
+
+        xhr.send();
+    }
+</script>
+{{block "main_footer" .}}{{end}}

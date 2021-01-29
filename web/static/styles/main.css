@@ -1,0 +1,128 @@
+/* Style the sidebar - fixed full height */
+.sidebar {
+  -webkit-border-radius: 20px 0 0 20px;
+  height: 100%;
+  width: 160px;
+  position: absolute;
+  float: left;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #3b6d9ff2;
+  overflow-x: hidden
+}
+
+/* Style sidebar links */
+.sidebar a {
+  padding: 20px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #ffffff;
+  display: block;
+}
+
+/* Style links on mouse-over */
+.sidebar a:hover {
+  color: #b5d9ff;
+}
+
+/* Style the main content */
+.mainall {
+  margin-left: 160px; /* Same as the width of the sidenav */
+  padding: 0px 10px;
+}
+
+/* Add media queries for small screens (when the height of the screen is less than 450px, add a smaller padding and font-size) */
+@media screen and (max-height: 450px) {
+  .sidebar {padding-top: 15px;}
+  .sidebar a {font-size: 18px;}
+}
+
+.containerm {
+  border: 2px solid #ccc;
+  background-color: #eee;
+  border-radius: 5px;
+  padding: 16px;
+  margin: 16px 0
+}
+
+.containerm::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.containerm img {
+  float: left;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+.containerm span {
+  font-size: 20px;
+  margin-right: 15px;
+}
+
+@media (max-width: 450px) {
+  .containerm {
+    text-align: center;
+  }
+  .containerm img {
+    margin: auto;
+    float: none;
+    display: block;
+  }
+}
+
+#contDiv{
+  height:700px;
+  overflow:auto;
+}
+#contDiv ul li{
+  list-style:none;
+}
+html, body {
+  font-family: sans-serif;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+#friend-list {
+  display: block;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #fff;
+  list-style-type: none;
+}
+.friend {
+  height: 80px;
+  background: #fff;
+  border-bottom: 1px solid #DDD;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.friend img {
+  width: 45px;
+  height: 45px;
+  border-radius: 30px;
+  border: 2px solid #AAA;
+  object-fit: cover;
+  margin-left: 5px;
+  margin-right: 10px;
+}
+.friend .name {
+  font-size: 18px;
+}
+.friend.selected {
+  background: #43A047;
+  color: white;
+}
+.friend.selected img {
+  border-color: white;
+}
+.friend:not(.selected):hover {
+  background: #b5d9ff91;
+}

@@ -1,13 +1,24 @@
 package usecase
 
-import "github.com/shipa988/hw_otus_architect/internal/domain/entity"
+import (
+	"context"
+	"github.com/shipa988/hw_otus_architect/internal/domain/entity"
+)
 
 type NetworkCore interface {
-	Login(user, pass string) (string,error)
-	Logout() error
-	SignUp(user, pass string) error
-	SendProfile(name, surName string, age int, gen entity.Gender, interest string, city string) error
-	GetFriends(age, gen entity.Gender, limit int, lastID uint) ([]entity.User, error)
-	Subscribe(id uint) error
-	UnSubscribe(id uint) error
+	Login(login, pass string) (at string, rt string, err error)
+	Logout(id uint64,uuid string) error
+	SignUp(login, name, pass string) (at string, rt string, err error)
+
+	SetTokenForUser(ctx context.Context, userID uint64) (string, string, error)
+	VerifyUser(token string, tokenType string) (userId, sessionId string, err error)
+
+	GetMyProfile(userID uint64) (entity.User, error)
+	SaveMyProfile(userID uint64,name, surName string, age string, gen string, interest string, city string) error
+	GetUserProfile(myUserID,otherUserId uint64) (*entity.Profile, error)
+
+	GetFriends(userID uint64, limit int, lastID uint64) ([]entity.User, error)
+	GetPeople(myuId uint64,searchName,searchSurname string, limit int, lastID uint64) ([]entity.User, error)
+	Subscribe(fromId uint64,toId uint64) error
+	UnSubscribe(fromId uint64,toId uint64) error
 }

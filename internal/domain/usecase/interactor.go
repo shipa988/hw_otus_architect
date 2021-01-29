@@ -3,8 +3,10 @@ package usecase
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
+	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/shipa988/hw_otus_architect/internal/domain/entity"
 	"github.com/twinj/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -18,96 +20,264 @@ const (
 )
 
 const (
-	errLogin = "can't login user '%v'"
+	errLogin         = "can't login user '%v'"
+	errLogOff        = "can't logoff user '%v'"
+	errSignUp        = "can't signup user '%v'"
+	errGetProfile    = "can't get user profile by id '%v'"
+	errGetFriends    = "can't get friends for id '%v'"
+	errGetPeople    = "can't get peolple for by %v and %v"
+	errSubscribe    = "can't subscribe user id '%v' to user id '%v'"
+	errUnSubscribe    = "can't unsubscribe user id '%v' to user id '%v'"
+	errSaveProfile      = "can't set user profile for id '%v'"
+	errVerifyToken   = "can't verify token '%v'"
+	errGenerateToken = "can't generate token"
+)
+
+var (
+	ACCESS_SECRET  = []byte("BA988091D779C3202AF3B7217ABD2641")
+	REFRESH_SECRET = []byte("32CF0917D16161DD6CB95BEAF12FA689")
 )
 
 var _ NetworkCore = (*Interactor)(nil)
 
 type Interactor struct {
 	userRepo entity.UserRepository
+	profileRepo entity.ProfileRepository
+	userAuthRepo entity.UserAuthRepository
+	ctxTimeoutS time.Duration
 }
 
-func NewInteractor(userRepo entity.UserRepository) *Interactor {
-	return &Interactor{userRepo: userRepo}
+
+
+func NewInteractor(userRepo entity.UserRepository, profileRepo entity.ProfileRepository, userAuthRepo entity.UserAuthRepository,ctxTimeoutS int) *Interactor {
+	return &Interactor{userRepo: userRepo, profileRepo: profileRepo, userAuthRepo: userAuthRepo,ctxTimeoutS:time.Second*time.Duration(ctxTimeoutS)}
 }
 
-func (i Interactor) Login(user, pass string) (string, error) {
-	ctx, _ := context.WithTimeout(context.TODO(), time.Second*5)
-
-	ok, err := i.userRepo.Validate(ctx, user, pass)
+func (i Interactor) GetFriends(userID uint64, limit int, lastID uint64) ([]entity.User, error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	friends,err:=i.userRepo.GetFriendsById(ctx,userID,limit,lastID)
 	if err != nil {
-		return "", errors.Wrap(err, errLogin)
+		return nil, errors.Wrapf(err, errGetFriends, userID)
 	}
-	if !ok{
-		return "", errors.New(errLogin)
-	}
+	return friends,nil
+}
 
-	u, err := i.userRepo.GetUser(ctx, user)
+func (i Interactor) GetPeople(myuId uint64,searchName, searchSurname string, limit int, lastID uint64) ([]entity.User, error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	people,err:=i.userRepo.FilterByNameSurName(ctx,myuId,searchName,searchSurname,limit,lastID)
 	if err != nil {
-		return "", errors.Wrap(err, errLogin)
+		return nil, errors.Wrapf(err, errGetPeople,searchName,searchSurname)
 	}
+	return people,nil
+}
 
-	ok, err = comparePasswords(u.PassHash, pass)
+func (i Interactor) Subscribe(fromId uint64, toId uint64) error {
+	ctx, _ := context.WithTimeout(context.TODO(),i.ctxTimeoutS)
+	err:=i.userRepo.Subscribe(ctx,fromId,toId)
 	if err != nil {
-		return "", errors.Wrap(err, errLogin)
-	}
-	if !ok{
-		return "", errors.New(errLogin)
-	}
-
-	ts, err := createToken(u.Id, u.PassHash)
-	if err != nil {
-		return "", errors.Wrap(err, errLogin)
-	}
-
-	at := time.Unix(ts.AtExpires, 0) //converting Unix to UTC(to Time object)
-	rt := time.Unix(ts.RtExpires, 0)
-	now := time.Now()
-
-	errAccess := i.userRepo.SignIn(ctx, ts.AccessUuid, u.Id)
-	if errAccess != nil {
-		return "", errors.Wrap(err, errLogin)
-	}
-	errRefresh := i.userRepo.SignIn(ctx, ts.RefreshUuid, u.Id)
-	if errRefresh != nil {
-		return "", errors.Wrap(err, errLogin)
+		return errors.Wrapf(err, errSubscribe, fromId,toId)
 	}
 	return nil
+}
 
-	err = createAuth(uid, ts)
+func (i Interactor) UnSubscribe(fromId uint64, toId uint64) error {
+	ctx, _ := context.WithTimeout(context.TODO(),i.ctxTimeoutS)
+	err:=i.userRepo.UnSubscribe(ctx,fromId,toId)
 	if err != nil {
-		return "", errors.Wrap(err, errLogin)
+		return errors.Wrapf(err, errUnSubscribe, fromId,toId)
 	}
-	jwtbase := base64.StdEncoding.EncodeToString([]byte("access_token:" + ts.AccessToken + ",refresh_token:" + ts.RefreshToken))
-	return jwtbase, nil
+	return nil
 }
-
-func (i Interactor) Logout() error {
-	panic("implement me")
-}
-
-func (i Interactor) SignUp(user, pass string) error {
-	hash, err := getHash(user, pass) //get hash
+func (i Interactor) GetMyProfile(userID uint64) (entity.User, error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	user,err:=i.userRepo.GetUserById(ctx,userID)
 	if err != nil {
-		return "", errors.Wrap(err, errLogin)
+		return user, errors.Wrapf(err, errGetProfile)
 	}
-	panic("implement me")
+	return user,nil
 }
 
-func (i Interactor) SendProfile(name, surName string, age int, gen entity.Gender, interest string, city string) error {
-	panic("implement me")
+func (i Interactor) GetUserProfile(myUserID, otherUserId uint64) (*entity.Profile, error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	user,err:=i.userRepo.GetUserById(ctx,otherUserId)
+	if err != nil {
+		return nil, errors.Wrapf(err, errGetProfile, otherUserId)
+	}
+	isfriend,err:=i.profileRepo.IsSubscribed(ctx,myUserID,otherUserId)
+	profile:=entity.Profile{
+		User:    &user,
+		IsFriend: isfriend,
+	}
+	return &profile,nil
 }
 
-func (i Interactor) GetFriends(age, gen entity.Gender, limit int, lastID uint) ([]entity.User, error) {
-	panic("implement me")
+func (i Interactor) SaveMyProfile(userID uint64,name, surName string, age string, gen string, interest string, city string) error {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	a,err:=strconv.Atoi(age)
+	if err != nil {
+		log.Error(errors.Wrapf(err, errSaveProfile, userID))
+	}
+	g:=entity.Other
+	switch gen {
+	case "male":
+		g=entity.Male
+	case "female":
+		g=entity.Female
+	default:
+		 log.Error(errors.Wrapf(errors.New("unknown gender"), errSaveProfile, userID))
+	}
+	user:=entity.User{
+		Id:       userID,
+		Name:     name,
+		SurName:  surName,
+		Age:      a,
+		Gen:      g,
+		Interest: interest,
+		City:     city,
+	}
+	err=i.userRepo.SaveUser(ctx,user)
+	if err != nil {
+		return errors.Wrapf(err, errSaveProfile,userID)
+	}
+	return nil
 }
 
-func (i Interactor) Subscribe(id uint) error {
-	panic("implement me")
+
+func (i Interactor) Logout(id uint64,uuid string) error {
+	ctx, _ := context.WithTimeout(context.TODO(),i.ctxTimeoutS)
+	if err:=i.userAuthRepo.LogOff(ctx,id,uuid);err!=nil{
+		return errors.Wrap(err, errLogOff)
+	}
+	return nil
 }
 
-func (i Interactor) UnSubscribe(id uint) error {
-	panic("implement me")
+func (i Interactor) VerifyUser(token string, tokenType string) (userId,sessionId string,err error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	var secret []byte
+	var uuidKey=""
+	switch tokenType {
+	case "at":
+		secret=ACCESS_SECRET
+		uuidKey="access_uuid"
+	case "rt":
+		secret=REFRESH_SECRET
+		uuidKey="refresh_uuid"
+	default:
+		return "", "",errors.New("token type is invalid")
+	}
+
+	tk, err := verifyToken(token, secret)
+	if err != nil {
+		return "","", errors.Wrapf(err, errVerifyToken, token)
+	}
+	claims, ok := tk.Claims.(jwt.MapClaims)
+	if ok && tk.Valid {
+
+		uuid, ok := claims[uuidKey].(string)
+		if !ok {
+			return "","", errors.Wrapf(errors.New("user uuid is absent"), errVerifyToken, token)
+		}
+		userID,ok:=claims["user_id"].(float64)
+		if !ok{
+			return "","", errors.Wrapf(errors.New("user id is absent"), errVerifyToken, token)
+		}
+
+		dbUserID,isSignIn, err := i.userAuthRepo.IsSignIn(ctx, uuid)
+		if err != nil {
+			return "","", errors.Wrapf(err, errVerifyToken, token)
+		}
+		if !isSignIn {
+			return "","", errors.Wrapf(errors.New("token is expired or not found"), errVerifyToken, token)
+		}
+		if dbUserID!= uint64(userID) {
+			return "","", errors.Wrapf(errors.New("user id in db and in token is not equal"), errVerifyToken, token)
+		}
+		return uuid,strconv.FormatUint(dbUserID,10),err
+	}
+	return "","", errors.New(errVerifyToken)
+}
+
+func (i Interactor) Login(login, pass string) (at string, rt string, err error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+
+	id,phash, err := i.userRepo.GetUserAuth(ctx, login)
+	if err != nil {
+		return "", "", errors.Wrapf(err, errLogin, login)
+	}
+
+	ok, err := comparePasswords(phash, pass)
+	if err != nil {
+		return "", "", errors.Wrapf(err, errLogin, login)
+	}
+	if !ok {
+		return "", "", errors.New(errLogin)
+	}
+
+	at,rt,err=i.SetTokenForUser(ctx, id)
+	if err != nil {
+		return "", "", errors.New(errLogin)
+	}
+	log.Info("user %v logged in",login)
+	return
+}
+
+func (i Interactor) SetTokenForUser(ctx context.Context, userID uint64) (string, string, error) {
+	ts, err := createToken(userID)
+	if err != nil {
+		return "", "", errors.New(errGenerateToken)
+	}
+
+	errAccess := i.userAuthRepo.SignIn(ctx, ts.AccessUuid, userID/*, ts.AtExpires*/)
+	if errAccess != nil {
+		return "", "", errors.New(errGenerateToken)
+	}
+	errRefresh := i.userAuthRepo.SignIn(ctx, ts.RefreshUuid, userID/*, ts.RtExpires*/)
+	if errRefresh != nil {
+		return "", "", errors.New(errGenerateToken)
+	}
+	at := base64.StdEncoding.EncodeToString([]byte(ts.AccessToken))
+	rt := base64.StdEncoding.EncodeToString([]byte(ts.RefreshToken))
+	return at, rt, nil
+}
+
+func (i Interactor) SignUp(login, name, pass string) (at string, rt string, err error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+
+	ok, err := i.userRepo.Validate(ctx, login, pass)
+	if err != nil {
+		return "", "", errors.Wrapf(err, errSignUp,login)
+	}
+	if !ok {
+		return "", "",fmt.Errorf(errSignUp,login)
+	}
+
+	hash, err := hashAndSalt(pass)
+	if err != nil {
+		return "", "", errors.Wrap(err, errSignUp)
+	}
+
+	id, err := i.userAuthRepo.Register(ctx, login,name, hash)
+	if err != nil {
+		return "", "", errors.Wrap(err, errLogin)
+	}
+
+	ts, err := createToken(id)
+	if err != nil {
+		return "", "", errors.Wrap(err, errLogin)
+	}
+
+	errAccess := i.userAuthRepo.SignIn(ctx, ts.AccessUuid, id/*, ts.AtExpires*/)
+	if errAccess != nil {
+		return "", "", errors.Wrap(err, errLogin)
+	}
+	errRefresh := i.userAuthRepo.SignIn(ctx, ts.RefreshUuid, id/*, ts.RtExpires*/)
+	if errRefresh != nil {
+		return "", "", errors.Wrap(err, errLogin)
+	}
+	at = base64.StdEncoding.EncodeToString([]byte(ts.AccessToken))
+	rt = base64.StdEncoding.EncodeToString([]byte(ts.RefreshToken))
+	log.Info("user %v signed up",login)
+	return at, rt, nil
 }
 
 type TokenDetails struct {
@@ -119,7 +289,7 @@ type TokenDetails struct {
 	RtExpires    int64
 }
 
-func createToken(userid uint64, hash string) (*TokenDetails, error) {
+func createToken(userid uint64) (*TokenDetails, error) {
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	td.AccessUuid = uuid.NewV4().String()
@@ -136,7 +306,7 @@ func createToken(userid uint64, hash string) (*TokenDetails, error) {
 	atClaims["user_id"] = userid
 	atClaims["exp"] = td.AtExpires
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	td.AccessToken, err = at.SignedString([]byte(hash))
+	td.AccessToken, err = at.SignedString(ACCESS_SECRET)
 	if err != nil {
 		return nil, err
 	}
@@ -147,27 +317,25 @@ func createToken(userid uint64, hash string) (*TokenDetails, error) {
 	rtClaims["user_id"] = userid
 	rtClaims["exp"] = td.RtExpires
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
-	td.RefreshToken, err = rt.SignedString([]byte(hash))
+	td.RefreshToken, err = rt.SignedString(REFRESH_SECRET)
 	if err != nil {
 		return nil, err
 	}
 	return td, nil
 }
 
-func createAuth(userid uint64, td *TokenDetails) error {
-	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
-	rt := time.Unix(td.RtExpires, 0)
-	now := time.Now()
-
-	errAccess := client.Set(td.AccessUuid, strconv.Itoa(int(userid)), at.Sub(now)).Err()
-	if errAccess != nil {
-		return errAccess
+func verifyToken(tokenString string, secret []byte) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+			return secret, nil
+	})
+	if err != nil {
+		return nil, err
 	}
-	errRefresh := client.Set(td.RefreshUuid, strconv.Itoa(int(userid)), rt.Sub(now)).Err()
-	if errRefresh != nil {
-		return errRefresh
-	}
-	return nil
+	return token, nil
 }
 
 func getHash(user, pass string) (hash string, err error) {

@@ -20,6 +20,8 @@ const (
 const (
 	ErrID = "must be id in query"
 	ErrServer = "Internal Server Error"
+	errAuth = "can't authorize user"
+	errTokenVerify = "can't verify token"
 )
 type HTTPServer struct {
 	server *http.Server
@@ -42,17 +44,23 @@ func (s *HTTPServer) Serve() error {
 	privateMux := http.NewServeMux()
 	privateMux.HandleFunc("/profile", s.profile)
 	privateMux.HandleFunc("/friends", s.friends)
+	privateMux.HandleFunc("/subscribe", s.subscribe)
+	privateMux.HandleFunc("/getpeople", s.getpeople)
+	privateMux.HandleFunc("/search", s.search)
+	privateMux.HandleFunc("/logout", s.logout)
+	privateMux.HandleFunc("/messages", s.messages)
 	privateMux.HandleFunc("/", s.mainPage)
 	privateHandler := s.authMiddleware(privateMux)
 
 	publicMux := http.NewServeMux()
 	publicMux.Handle("/", privateHandler)
 	publicMux.HandleFunc("/login", s.loginPage)
-	publicMux.HandleFunc("/favicon.ico", s.faviconHandler)
+	publicMux.HandleFunc("/signup", s.signUpPage)
 	publicMux.HandleFunc("/404", s._404Handler)
 	publicHandler := s.accessLogMiddleware(publicMux)
 
 	staticMux := http.NewServeMux()
+	staticMux.HandleFunc("/favicon.ico", s.faviconHandler)
 	staticMux.Handle("/", publicHandler)
 	fs := http.FileServer(http.Dir(path.Join("web", "static")))
 	staticMux.Handle("/static/", http.StripPrefix("/static/", fs))
@@ -71,33 +79,30 @@ func (s *HTTPServer) Serve() error {
 
 func (s *HTTPServer) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("token")
+		ctx,err := s.tokenVerify(r, "at")
 		if err != nil {
-			log.Error(err)
+			log.Error(errors.Wrap(err, errAuth))
 			http.Redirect(w, r, "/login", 302)
 			return
 		}
-		token, err := base64.StdEncoding.DecodeString(cookie.Value)
-		if err != nil {
-			log.Error(err)
-			http.Redirect(w, r, "/login", 302)
-			return
-		}
-		if !getToken(token) {
-			log.Error("wrong token %v",token)
-			http.Redirect(w, r, "/login", 302)
-			return
-		}
-		ctx := SetUserID(r.Context(), "userid") //todo: make user name in cookie
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func getToken(t []byte) bool { //todo: from bd
-	if string(t) == "jwttoken" {
-		return true
+func (s *HTTPServer) tokenVerify(r *http.Request, tokenType string) (context.Context,error) {
+	cookie, err := r.Cookie(tokenType)
+	if err != nil {
+		return nil,errors.Wrap(err, errTokenVerify)
 	}
-	return false
+	token, err := base64.StdEncoding.DecodeString(cookie.Value)
+	if err != nil {
+		return nil,errors.Wrap(err, errTokenVerify)
+	}
+	sessionUuid,userID, err := s.networkcore.VerifyUser(string(token), tokenType)
+	if err != nil {
+		return nil,errors.Wrap(err, errTokenVerify)
+	}
+	return SetUserID(SetSessionUUID(r.Context(), sessionUuid), userID),nil
 }
 
 func (s *HTTPServer) StopServe() {
@@ -130,7 +135,12 @@ func (s *HTTPServer) panicMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				log.Error(errors.Wrap(err.(error),ErrServer))
+				switch err.(type) {
+				case error:
+					log.Error(errors.Wrap(err.(error),ErrServer))
+				default:
+					log.Error(err,ErrServer)
+				}
 				http.Redirect(w, r, "/404", 302)
 			}
 		}()
@@ -159,9 +169,9 @@ func (s *HTTPServer) corsHandler(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HTTPServer) httpError(w http.ResponseWriter, error string, code int) {
+func (s *HTTPServer) httpError(w http.ResponseWriter,  r *http.Request,error string, code int) {
 	log.Error(error)
-	http.Error(w, error, code)
+	http.Redirect(w, r, "/404", 302)
 }
 
 func (s *HTTPServer) httpAnswer(w http.ResponseWriter, msg interface{}, code int) {
@@ -173,14 +183,7 @@ func (s *HTTPServer) httpAnswer(w http.ResponseWriter, msg interface{}, code int
 	w.Write(jmsg) //nolint:errcheck
 }
 
-func addCookie(w http.ResponseWriter, name, value string, ttl time.Duration) {
-	expire := time.Now().Add(ttl)
-	cookie := http.Cookie{
-		Name:    name,
-		Value:   value,
-		Expires: expire,
-	}
-	http.SetCookie(w, &cookie)
-}
+
+
 
 

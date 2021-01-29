@@ -5,21 +5,40 @@ import (
 	"net/http"
 )
 
-const UserID = contextKey("UserID")
+const (
+	UserID = contextKey("UserID")
+	SessionID = contextKey("SessionId")
+)
 
 type contextKey string
 
-func GetUserID(ctx context.Context) (userID string) {
+
+func GetUserID(ctx context.Context) (id string) {
 	if ctx == nil {
 		return
 	}
-	userID, _ = ctx.Value(UserID).(string)
+	id, _ = ctx.Value(UserID).(string)
 	return
 }
 
-func SetUserID(ctx context.Context, userID string) context.Context {
+func SetUserID(ctx context.Context, id string) context.Context {
 	if len(GetUserID(ctx)) == 0 {
-		return context.WithValue(ctx, UserID, userID)
+		return context.WithValue(ctx, UserID, id)
+	}
+	return ctx
+}
+
+func GetSessionUUID(ctx context.Context) (uuid string) {
+	if ctx == nil {
+		return
+	}
+	uuid, _ = ctx.Value(SessionID).(string)
+	return
+}
+
+func SetSessionUUID(ctx context.Context, uuid string) context.Context {
+	if len(GetSessionUUID(ctx)) == 0 {
+		return context.WithValue(ctx, SessionID, uuid)
 	}
 	return ctx
 }

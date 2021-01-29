@@ -6,6 +6,7 @@ import (
 	"github.com/shipa988/hw_otus_architect/internal/data/config"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/server"
+	"github.com/shipa988/hw_otus_architect/internal/data/repository/mysql"
 	"github.com/shipa988/hw_otus_architect/internal/domain/usecase"
 	"net"
 	"os"
@@ -15,6 +16,10 @@ import (
 
 type NetworkApp struct {
 }
+
+const (
+	ErrStart = "can't start social network core service"
+)
 
 func NewNetworkApp() *NetworkApp {
 	return &NetworkApp{}
@@ -36,7 +41,12 @@ func (p *NetworkApp) Start(cfg *config.Config) (err error) {
 		return errors.Wrap(errors.New("can't connect to Tarantool"), StartErr)
 	}*/
 	//publisher := usecase.NewPublisherInteractor(stanBroker/*,&tnt*/)*/
- 	core:=usecase.NewInteractor()
+	repo:=mysql.NewMySqlRepo()
+	err=repo.Connect(ctx,cfg.DB)
+	if err != nil {
+		return errors.Wrapf(err, ErrStart)
+	}
+ 	core:=usecase.NewInteractor(repo,repo,repo,15)
 	server := server.NewHttpServer(net.JoinHostPort("0.0.0.0",cfg.API.Port),core)
 
 	wg := &sync.WaitGroup{}
@@ -44,7 +54,7 @@ func (p *NetworkApp) Start(cfg *config.Config) (err error) {
 	go func() {
 		defer wg.Done()
 		if err := server.Serve(); err != nil {
-			log.Error(ctx, errors.Wrapf(err, "StartErr"))
+			log.Error(ctx, errors.Wrapf(err, ErrStart))
 		}
 	}()
 	c := make(chan os.Signal, 1)
