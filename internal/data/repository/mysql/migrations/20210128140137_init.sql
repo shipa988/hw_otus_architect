@@ -1,13 +1,13 @@
 -- +goose Up
 CREATE TABLE Users
 (
-    Id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    Id INT PRIMARY KEY AUTO_INCREMENT,
     Login VARCHAR(255) NOT NULL UNIQUE,
     PassHash VARCHAR(255) NOT NULL
 );
 CREATE TABLE Profiles
 (
-    Id INT(11)  PRIMARY KEY,
+    Id INT  PRIMARY KEY,
     Name     VARCHAR(255),
     SurName  VARCHAR(255),
     Age      INT,
@@ -20,8 +20,8 @@ CREATE TABLE Profiles
 
 CREATE TABLE Friends
 (
-    UserId INT(11)  NOT NULL,
-    FriendId INT(11)  NOT NULL,
+    UserId INT  NOT NULL,
+    FriendId INT  NOT NULL,
     PRIMARY KEY (UserId, FriendId),
     FOREIGN KEY (UserId) REFERENCES Users(id) ON DELETE CASCADE,
     FOREIGN KEY (FriendId) REFERENCES Users(id) ON DELETE CASCADE
@@ -29,8 +29,8 @@ CREATE TABLE Friends
 
 CREATE TABLE Seanses
 (
-    Id INT(11) PRIMARY KEY AUTO_INCREMENT,
-    UserId INT(11)  NOT NULL,
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    UserId INT  NOT NULL,
     Uuid varchar(36)  NOT NULL,
     FOREIGN KEY (UserId) REFERENCES Users(id) ON DELETE CASCADE
 );

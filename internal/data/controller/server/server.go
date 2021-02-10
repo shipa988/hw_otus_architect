@@ -23,22 +23,22 @@ const (
 	errAuth = "can't authorize user"
 	errTokenVerify = "can't verify token"
 )
-type HTTPServer struct {
+type httpServer struct {
 	server *http.Server
 	networkcore usecase.NetworkCore
 }
 
-func NewHttpServer(addr string, networkcore usecase.NetworkCore) *HTTPServer {
+func NewHttpServer(addr string, networkcore usecase.NetworkCore) *httpServer {
 	server := &http.Server{
 		Addr: addr,
 	}
-	return &HTTPServer{
+	return &httpServer{
 		server: server,
 		networkcore: networkcore,
 	}
 }
 
-func (s *HTTPServer) Serve() error {
+func (s *httpServer) Serve() error {
 	log.Info("starting http server on address [%v]", s.server.Addr)
 
 	privateMux := http.NewServeMux()
@@ -77,7 +77,7 @@ func (s *HTTPServer) Serve() error {
 }
 
 
-func (s *HTTPServer) authMiddleware(next http.Handler) http.Handler {
+func (s *httpServer) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx,err := s.tokenVerify(r, "at")
 		if err != nil {
@@ -89,7 +89,7 @@ func (s *HTTPServer) authMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HTTPServer) tokenVerify(r *http.Request, tokenType string) (context.Context,error) {
+func (s *httpServer) tokenVerify(r *http.Request, tokenType string) (context.Context,error) {
 	cookie, err := r.Cookie(tokenType)
 	if err != nil {
 		return nil,errors.Wrap(err, errTokenVerify)
@@ -105,7 +105,7 @@ func (s *HTTPServer) tokenVerify(r *http.Request, tokenType string) (context.Con
 	return SetUserID(SetSessionUUID(r.Context(), sessionUuid), userID),nil
 }
 
-func (s *HTTPServer) StopServe() {
+func (s *httpServer) StopServe() {
 	ctx := context.Background()
 	log.Info("stopping http server")
 	defer log.Info("http server stopped")
@@ -121,7 +121,7 @@ func (s *HTTPServer) StopServe() {
 	}
 }
 
-func (s *HTTPServer) accessLogMiddleware(next http.Handler) http.Handler {
+func (s *httpServer) accessLogMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		rw := &WrapResponseWriter{ResponseWriter: w}
@@ -131,7 +131,7 @@ func (s *HTTPServer) accessLogMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HTTPServer) panicMiddleware(next http.Handler) http.Handler {
+func (s *httpServer) panicMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -148,11 +148,11 @@ func (s *HTTPServer) panicMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HTTPServer) logRequest(remoteAddr, start, method, code, path string, latency time.Duration) {
+func (s *httpServer) logRequest(remoteAddr, start, method, code, path string, latency time.Duration) {
 	log.Info("%s [%s] %s %s %s [%dns]", remoteAddr, start, method, code, path, latency.Nanoseconds())
 }
 
-func (s *HTTPServer) corsHandler(next http.Handler) http.Handler {
+func (s *httpServer) corsHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		headers := w.Header()
 		headers.Add("Access-Control-Allow-Origin", "*")
@@ -169,12 +169,12 @@ func (s *HTTPServer) corsHandler(next http.Handler) http.Handler {
 	})
 }
 
-func (s *HTTPServer) httpError(w http.ResponseWriter,  r *http.Request,error string, code int) {
+func (s *httpServer) httpError(w http.ResponseWriter,  r *http.Request,error string, code int) {
 	log.Error(error)
 	http.Redirect(w, r, "/404", 302)
 }
 
-func (s *HTTPServer) httpAnswer(w http.ResponseWriter, msg interface{}, code int) {
+func (s *httpServer) httpAnswer(w http.ResponseWriter, msg interface{}, code int) {
 	jmsg, err := json.Marshal(msg)
 	if err != nil {
 		code = http.StatusInternalServerError

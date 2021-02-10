@@ -11,7 +11,7 @@ type NetworkCore interface {
 	SignUp(login, name, pass string) (at string, rt string, err error)
 
 	SetTokenForUser(ctx context.Context, userID uint64) (string, string, error)
-	VerifyUser(token string, tokenType string) (userId, sessionId string, err error)
+	VerifyUser(token string, tokenType string) (sessionId,userId  string, err error)
 
 	GetMyProfile(userID uint64) (entity.User, error)
 	SaveMyProfile(userID uint64,name, surName string, age string, gen string, interest string, city string) error

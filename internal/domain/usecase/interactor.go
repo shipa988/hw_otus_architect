@@ -123,6 +123,8 @@ func (i Interactor) SaveMyProfile(userID uint64,name, surName string, age string
 		g=entity.Male
 	case "female":
 		g=entity.Female
+	case "other":
+		g=entity.Other
 	default:
 		 log.Error(errors.Wrapf(errors.New("unknown gender"), errSaveProfile, userID))
 	}
@@ -151,7 +153,7 @@ func (i Interactor) Logout(id uint64,uuid string) error {
 	return nil
 }
 
-func (i Interactor) VerifyUser(token string, tokenType string) (userId,sessionId string,err error) {
+func (i Interactor) VerifyUser(token string, tokenType string) (sessionId,userId string,err error) {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
 	var secret []byte
 	var uuidKey=""

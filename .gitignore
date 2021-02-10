@@ -2,7 +2,7 @@
 
 config/network-heroku.yaml
 config/network-prod.yaml
-
+config/network-vpn.yaml
 # Binaries for programs and plugins
 *.exe
 *.log

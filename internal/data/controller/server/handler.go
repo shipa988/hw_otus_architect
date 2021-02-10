@@ -22,21 +22,21 @@ var (
 	_404template    = template.Must(template.ParseFiles(path.Join("web", "404.html")))
 )
 
-func (s *HTTPServer) faviconHandler(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) faviconHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "web/static/ico/favicon.ico")
 }
 
-func (s *HTTPServer) _404Handler(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) _404Handler(w http.ResponseWriter, r *http.Request) {
 	if e := _404template.Execute(w, ""); e != nil {
 		log.Error(errors.Wrap(e, "_404 page error compose page"))
 	}
 }
 
-func (s *HTTPServer) messages(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) messages(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/404", 302)
 }
 
-func (s *HTTPServer) mainPage(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) mainPage(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
 	if err != nil {
 		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
@@ -74,7 +74,7 @@ func (s *HTTPServer) mainPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *HTTPServer) loginPage(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) loginPage(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		ref:=r.Header.Get("Referer")
@@ -129,7 +129,7 @@ func (s *HTTPServer) loginPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *HTTPServer) signUpPage(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) signUpPage(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		if e := signuptemplate.Execute(w, struct {
@@ -168,7 +168,7 @@ func (s *HTTPServer) signUpPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *HTTPServer) search(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) search(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		if e := searchtemplate.Execute(w, struct {
@@ -182,7 +182,7 @@ func (s *HTTPServer) search(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *HTTPServer) profile(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) profile(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	id, err := strconv.ParseUint(r.FormValue("id"), 10, 64)
 	if err != nil {
@@ -212,7 +212,7 @@ func (s *HTTPServer) profile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *HTTPServer) getpeople(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) getpeople(w http.ResponseWriter, r *http.Request) {
 	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
 	if err != nil {
 		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
@@ -248,7 +248,7 @@ func (s *HTTPServer) getpeople(w http.ResponseWriter, r *http.Request) {
 	}
 	s.httpAnswer(w, "", 200)
 }
-func (s *HTTPServer) friends(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) friends(w http.ResponseWriter, r *http.Request) {
 	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
 	if err != nil {
 		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
@@ -267,7 +267,7 @@ func (s *HTTPServer) friends(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *HTTPServer) logout(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) logout(w http.ResponseWriter, r *http.Request) {
 	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
 	if err != nil {
 		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
@@ -281,7 +281,7 @@ func (s *HTTPServer) logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-func (s *HTTPServer) subscribe(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) subscribe(w http.ResponseWriter, r *http.Request) {
 	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
 	if err != nil {
 		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)

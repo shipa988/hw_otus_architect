@@ -21,8 +21,8 @@ type API struct {
 
 type DB struct {
 	Provider string `yaml:"provider"`
-	Address  string `yaml:"address"`
-	Port     string `yaml:"port"`
+	Master   string   `yaml:"master"`
+	Slaves   []string `yaml:"slaves"`
 	Login    string `yaml:"login"`
 	Password string `yaml:"password"`
 	Name     string `yaml:"name"`

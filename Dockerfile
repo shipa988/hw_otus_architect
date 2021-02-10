@@ -34,4 +34,4 @@ COPY --from=builder /app/config/network-heroku.yaml .
 COPY --from=builder /app/web/ web/
 
 # Command to run the executable
-CMD ["./ncmonolit","--config","network-heroku.yaml","--logdest", "std", "--loglevel", "debug"]
+CMD ["./ncmonolit","--config","network-dev.yaml","--logdest", "std", "--loglevel", "debug"]

@@ -5,7 +5,7 @@ services:
     restart: always
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-prod
     depends_on:
       - db
     ports:
@@ -15,6 +15,8 @@ services:
     volumes:
       - my-db:/var/lib/mysql
       - ${DBSCHEMAPATH}:/docker-entrypoint-initdb.d
+      - my-cfg:/etc/mysql
+      - my-log:/var/log
     restart: always
     ports:
       - 3306:3306
@@ -26,3 +28,5 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 volumes:
   my-db:
+  my-log:
+  my-cfg:

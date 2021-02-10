@@ -23,53 +23,56 @@ const (
 	insertErr     = `can't insert to mysql'`
 )
 
-var _ entity.UserRepository = (*MySqlRepo)(nil)
-var _ entity.ProfileRepository = (*MySqlRepo)(nil)
-var _ entity.UserAuthRepository = (*MySqlRepo)(nil)
+var _ entity.UserRepository = (*mySqlRepo)(nil)
+var _ entity.ProfileRepository = (*mySqlRepo)(nil)
+var _ entity.UserAuthRepository = (*mySqlRepo)(nil)
 
-type MySqlRepo struct {
-	db *sql.DB
-	ctxFilterByNameSurName *sql.Stmt
+type mySqlRepo struct {
+	master *sql.DB
+	slaves []*sql.DB
 }
 
-func NewMySqlRepo() *MySqlRepo {
-	return &MySqlRepo{}
+func NewMySqlRepo() *mySqlRepo {
+	return &mySqlRepo{}
 }
-
-func (repo *MySqlRepo) Connect(ctx context.Context, cfg config.DB) (err error) {
-	repo.db, err = sql.Open(cfg.Provider, fmt.Sprintf("%v:%v@tcp(%v:%v)/%v", cfg.Login, cfg.Password, cfg.Address, cfg.Port, cfg.Name))
+func (repo *mySqlRepo) getSlave(userId uint64) *sql.DB {
+	return repo.slaves[userId%uint64(len(repo.slaves))]
+}
+func (repo *mySqlRepo) connect(ctx context.Context,provider, login, password, addr, name string) (db *sql.DB,err error) {
+	db, err = sql.Open(provider, fmt.Sprintf("%v:%v@tcp(%v)/%v", login, password, addr, name))
 	if err != nil {
-		return errors.Wrap(err, connectErr)
+		return nil,errors.Wrap(err, connectErr)
 	}
-	// See "Important settings" section.
-	repo.db.SetConnMaxLifetime(time.Minute * 3)
-	repo.db.SetMaxOpenConns(100)
-	repo.db.SetMaxIdleConns(100)
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(100)
+	db.SetMaxIdleConns(100)
 
-	repo.db.Stats()
-	err = repo.db.PingContext(ctx)
+	db.Stats()
+	err = db.PingContext(ctx)
 	if err != nil {
-		return errors.Wrap(err, connectErr)
+		return nil,errors.Wrap(err, connectErr)
 	}
-	log.Info("connected to mysql server [%v:%v]", cfg.Address, cfg.Port)
-	err= repo.prepareContexts(ctx, err)
-	if err!=nil{
-		return errors.Wrap(err, connectErr)
+	log.Info("connected to mysql server [%v]", addr)
+	return db,nil
+}
+func (repo *mySqlRepo) Connect(ctx context.Context, cfg config.DB) (err error) {
+	repo.master,err=repo.connect(ctx,cfg.Provider, cfg.Login, cfg.Password, cfg.Master, cfg.Name)
+	if err != nil {
+		return err
+	}
+	for _, slave := range cfg.Slaves {
+		slavedb,err:=repo.connect(ctx,cfg.Provider, cfg.Login, cfg.Password, slave, cfg.Name)
+		if err != nil {
+			return err
+		}
+		repo.slaves = append(repo.slaves, slavedb)
 	}
 	return nil
 }
 
-func (repo *MySqlRepo) prepareContexts(ctx context.Context, err error) (error) {
-	repo.ctxFilterByNameSurName, err = repo.db.PrepareContext(ctx, `SELECT Id,Name,SurName,Age,Gen,Interest,City FROM Profiles where Id<>? and Name like concat(?, '%') and SurName like concat(?, '%') and Id>? order by Id limit ?;`)
-	if err != nil {
-		return  errors.Wrap(err, "can't prepare statements")
-	}
-	return nil
-}
-
-func (repo *MySqlRepo) IsSubscribed(ctx context.Context, userId uint64, subscibeId uint64) (bool, error) {
+func (repo *mySqlRepo) IsSubscribed(ctx context.Context, userId uint64, subscibeId uint64) (bool, error) {
 	cnt := 0
-	err := repo.db.QueryRowContext(ctx, `SELECT count(*) FROM Friends where UserId=? and FriendId=?;`, userId, subscibeId).Scan(&cnt)
+	err := repo.master.QueryRowContext(ctx, `SELECT count(*) FROM Friends where UserId=? and FriendId=?;`, userId, subscibeId).Scan(&cnt)
 	switch {
 	case err == sql.ErrNoRows:
 		return false, nil
@@ -82,24 +85,24 @@ func (repo *MySqlRepo) IsSubscribed(ctx context.Context, userId uint64, subscibe
 	}
 }
 
-func (repo *MySqlRepo) Subscribe(ctx context.Context, fromId uint64, toId uint64) error {
-	_, err := repo.db.ExecContext(ctx, "INSERT INTO Friends (`UserId`,`FriendId`)VALUES(?,?);", fromId, toId)
+func (repo *mySqlRepo) Subscribe(ctx context.Context, fromId uint64, toId uint64) error {
+	_, err := repo.master.ExecContext(ctx, "INSERT INTO Friends (`UserId`,`FriendId`)VALUES(?,?);", fromId, toId)
 	if err != nil {
 		return errors.Wrap(err, "subscribe error")
 	}
 	return nil
 }
 
-func (repo *MySqlRepo) UnSubscribe(ctx context.Context, fromId uint64, toId uint64) error {
-	_, err := repo.db.ExecContext(ctx, "DELETE from Friends where `UserId`=? and`FriendId`=?;", fromId, toId)
+func (repo *mySqlRepo) UnSubscribe(ctx context.Context, fromId uint64, toId uint64) error {
+	_, err := repo.master.ExecContext(ctx, "DELETE from Friends where `UserId`=? and`FriendId`=?;", fromId, toId)
 	if err != nil {
 		return errors.Wrap(err, "unsubscribe error")
 	}
 	return nil
 }
 
-func (repo *MySqlRepo) GetFriendsById(ctx context.Context, id uint64, limit int, lastID uint64) ([]entity.User, error) {
-	rows, err := repo.db.QueryContext(ctx, `select allp.Id,allp.Name,allp.SurName,allp.Age,allp.Gen,allp.Interest,allp.City  from (select FriendId from Friends where UserId=?) fr left join (SELECT Id,Name,SurName,Age,Gen,Interest,City FROM Profiles) allp on fr.FriendId = allp.Id where allp.Id>? order by allp.Id limit ?;`, id, lastID, limit)
+func (repo *mySqlRepo) GetFriendsById(ctx context.Context, id uint64, limit int, lastID uint64) ([]entity.User, error) {
+	rows, err := repo.getSlave(id).QueryContext(ctx, `select allp.Id,allp.Name,allp.SurName,allp.Age,allp.Gen,allp.Interest,allp.City  from (select FriendId from Friends where UserId=?) fr left join (SELECT Id,Name,SurName,Age,Gen,Interest,City FROM Profiles) allp on fr.FriendId = allp.Id where allp.Id>? order by allp.Id limit ?;`, id, lastID, limit)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, SQLError(err, ErrGet)
 	}
@@ -107,8 +110,8 @@ func (repo *MySqlRepo) GetFriendsById(ctx context.Context, id uint64, limit int,
 	return repo.rowsToUsers(rows, ErrGet)
 }
 
-func (repo *MySqlRepo) FilterByNameSurName(ctx context.Context, myuId uint64, name, surname string, limit int, lastID uint64) ([]entity.User, error) {
-	rows, err := repo.ctxFilterByNameSurName.QueryContext(ctx, myuId, name, surname, lastID, limit)
+func (repo *mySqlRepo) FilterByNameSurName(ctx context.Context, myuId uint64, name, surname string, limit int, lastID uint64) ([]entity.User, error) {
+	rows, err := repo.getSlave(myuId).QueryContext(ctx, `SELECT Id,Name,SurName,Age,Gen,Interest,City FROM Profiles where Id<>? and Name like concat(?, '%') and SurName like concat(?, '%') and Id>? order by Id limit ?;`, myuId, name, surname, lastID, limit)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, SQLError(err, ErrGet)
 	}
@@ -116,9 +119,9 @@ func (repo *MySqlRepo) FilterByNameSurName(ctx context.Context, myuId uint64, na
 	return repo.rowsToUsers(rows, ErrGet)
 }
 
-func (repo *MySqlRepo) GetUserById(ctx context.Context, id uint64) (entity.User, error) {
+func (repo *mySqlRepo) GetUserById(ctx context.Context, id uint64) (entity.User, error) {
 	user := entity.User{}
-	err := repo.db.QueryRowContext(ctx, `SELECT Id,Name,SurName,Age,Gen,Interest,City FROM Profiles where Id=?;`, id).Scan(&user.Id, &user.Name, &user.SurName, &user.Age, &user.Gen, &user.Interest, &user.City)
+	err := repo.getSlave(id).QueryRowContext(ctx, `SELECT Id,Name,SurName,Age,Gen,Interest,City FROM Profiles where Id=?;`, id).Scan(&user.Id, &user.Name, &user.SurName, &user.Age, &user.Gen, &user.Interest, &user.City)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -130,24 +133,24 @@ func (repo *MySqlRepo) GetUserById(ctx context.Context, id uint64) (entity.User,
 	}
 }
 
-func (repo *MySqlRepo) LogOff(ctx context.Context, id uint64, uuid string) (err error) {
-	_, err = repo.db.ExecContext(ctx, "DELETE from Seanses where `UserId`=?", id)
+func (repo *mySqlRepo) LogOff(ctx context.Context, id uint64, uuid string) (err error) {
+	_, err = repo.master.ExecContext(ctx, "DELETE from Seanses where `UserId`=?", id)
 	if err != nil {
 		return errors.Wrap(err, "logoff error")
 	}
 	return nil
 }
 
-func (repo *MySqlRepo) SignIn(ctx context.Context, uuid string, id uint64) error {
-	_, err := repo.db.ExecContext(ctx, "INSERT INTO Seanses (`UserId`,`Uuid`)VALUES(?,?);", id, uuid)
+func (repo *mySqlRepo) SignIn(ctx context.Context, uuid string, id uint64) error {
+	_, err := repo.master.ExecContext(ctx, "INSERT INTO Seanses (`UserId`,`Uuid`)VALUES(?,?);", id, uuid)
 	if err != nil {
 		return errors.Wrap(err, "signin error")
 	}
 	return nil
 }
 
-func (repo *MySqlRepo) IsSignIn(ctx context.Context, uuid string) (id uint64, ok bool, err error) {
-	err = repo.db.QueryRowContext(ctx, `SELECT UserId FROM Seanses where Uuid=?;`, uuid).Scan(&id)
+func (repo *mySqlRepo) IsSignIn(ctx context.Context, uuid string) (id uint64, ok bool, err error) {
+	err = repo.master.QueryRowContext(ctx, `SELECT UserId FROM Seanses where Uuid=?;`, uuid).Scan(&id)
 	switch {
 	case err == sql.ErrNoRows:
 		return 0, false, nil
@@ -158,8 +161,8 @@ func (repo *MySqlRepo) IsSignIn(ctx context.Context, uuid string) (id uint64, ok
 	}
 }
 
-func (repo *MySqlRepo) Register(ctx context.Context, login, name, hash string) (uint64, error) {
-	res, err := repo.db.ExecContext(ctx, "INSERT INTO Users (Login,PassHash) VALUES(?,?)", login, hash)
+func (repo *mySqlRepo) Register(ctx context.Context, login, name, hash string) (uint64, error) {
+	res, err := repo.master.ExecContext(ctx, "INSERT INTO Users (Login,PassHash) VALUES(?,?)", login, hash)
 	if err != nil {
 		return 0, errors.Wrap(err, "register error")
 	}
@@ -178,10 +181,10 @@ func (repo *MySqlRepo) Register(ctx context.Context, login, name, hash string) (
 	return uint64(id), nil
 }
 
-func (repo *MySqlRepo) GetUserAuth(ctx context.Context, login string) (uint64, string, error) {
+func (repo *mySqlRepo) GetUserAuth(ctx context.Context, login string) (uint64, string, error) {
 	var id uint64
 	var hash string
-	err := repo.db.QueryRowContext(ctx, `SELECT Id,PassHash FROM Users where Login=?;`, login).Scan(&id, &hash)
+	err := repo.master.QueryRowContext(ctx, `SELECT Id,PassHash FROM Users where Login=?;`, login).Scan(&id, &hash)
 
 	if err != nil {
 		return 0, "", errors.Wrap(err, "get user auth by login error")
@@ -189,15 +192,15 @@ func (repo *MySqlRepo) GetUserAuth(ctx context.Context, login string) (uint64, s
 	return id, hash, nil
 }
 
-func (repo *MySqlRepo) SaveUser(ctx context.Context, user entity.User) error {
-	_, err := repo.db.ExecContext(ctx, "INSERT INTO Profiles (`Id`, `Name`, `SurName`, `Age`, `Gen`, `Interest`, `City`) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `Id`=?,`Name`=?,`SurName`=?,`Age`=?,`Gen`=?,`Interest`=?,`City`=?", user.Id, user.Name, user.SurName, user.Age, user.Gen, user.Interest, user.City, user.Id, user.Name, user.SurName, user.Age, user.Gen, user.Interest, user.City)
+func (repo *mySqlRepo) SaveUser(ctx context.Context, user entity.User) error {
+	_, err := repo.master.ExecContext(ctx, "INSERT INTO Profiles (`Id`, `Name`, `SurName`, `Age`, `Gen`, `Interest`, `City`) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `Id`=?,`Name`=?,`SurName`=?,`Age`=?,`Gen`=?,`Interest`=?,`City`=?", user.Id, user.Name, user.SurName, user.Age, user.Gen, user.Interest, user.City, user.Id, user.Name, user.SurName, user.Age, user.Gen, user.Interest, user.City)
 	if err != nil {
 		return errors.Wrap(err, "save User error")
 	}
 	return nil
 }
 
-func (repo *MySqlRepo) Validate(ctx context.Context, login, pass string) (bool, error) {
+func (repo *mySqlRepo) Validate(ctx context.Context, login, pass string) (bool, error) {
 	if len(login) == 0 || len(login) > 20 {
 		err := &MySqlError{
 			Msg: "Length of login is invalid",
@@ -214,7 +217,7 @@ func (repo *MySqlRepo) Validate(ctx context.Context, login, pass string) (bool, 
 		return false, err
 	}
 	var id uint64
-	err := repo.db.QueryRowContext(ctx, `select Id from Users where Login=?;`, login).Scan(&id)
+	err := repo.master.QueryRowContext(ctx, `select Id from Users where Login=?;`, login).Scan(&id)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -230,7 +233,7 @@ func (repo *MySqlRepo) Validate(ctx context.Context, login, pass string) (bool, 
 	}
 }
 
-func (repo *MySqlRepo) SaveUsersBatch(ctx context.Context, users []entity.User) error {
+func (repo *mySqlRepo) SaveUsersBatch(ctx context.Context, users []entity.User) error {
 	/*	sqlStr := "insert into public.users (id, name, rate) values "
 		var vals []interface{}
 		for i, row := range cs {
@@ -260,7 +263,7 @@ func (repo *MySqlRepo) SaveUsersBatch(ctx context.Context, users []entity.User) 
 	return nil
 }
 
-func (repo *MySqlRepo) rowsToUsers(rows *sql.Rows, errorString string) ([]entity.User, error) {
+func (repo *mySqlRepo) rowsToUsers(rows *sql.Rows, errorString string) ([]entity.User, error) {
 	var users []entity.User
 	for rows.Next() {
 		user := entity.User{}

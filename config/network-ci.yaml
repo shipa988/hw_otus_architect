@@ -8,10 +8,10 @@ api:
   writetimeout: 2000
 db:
   provider: "mysql"
-  master: "localhost:3306"
+  master: "master:3306"
   slaves:
-    - "localhost:3307"
-    - "localhost:3308"
+    - "slave1:3307"
+    - "slave2:3308"
   login: "user"
   password: "userpw"
   name: "networkcore"
