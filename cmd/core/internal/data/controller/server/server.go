@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
-	"github.com/shipa988/hw_otus_architect/internal/domain/usecase"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/domain/usecase"
 	"net/http"
 	"path"
 	"strconv"
@@ -137,9 +137,9 @@ func (s *httpServer) panicMiddleware(next http.Handler) http.Handler {
 			if err := recover(); err != nil {
 				switch err.(type) {
 				case error:
-					log.Error(errors.Wrap(err.(error),ErrServer))
+					log.Error(errors.Wrap(err.(error), ErrServer))
 				default:
-					log.Error(err,ErrServer)
+					log.Error(err, ErrServer)
 				}
 				http.Redirect(w, r, "/404", 302)
 			}

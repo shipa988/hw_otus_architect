@@ -24,12 +24,12 @@ lint: prepare_lint fmt tidy
 	golangci-lint run ./...
 fmt:
 	go fmt ./...
-run: dep_install
-	go run main.go --config=config/network-prod.yaml --logdest std --loglevel debug
+run: #dep_install
+	go run cmd/core/main.go --config=cmd/core/config/network-dev.yaml --logdest std --loglevel debug
 build: dep_install
-	go build -o ncmonolit.exe  main.go
+	go build -o ncmonolit.exe  cmd/core/main.go
 start:
-	ncmonolit.exe  --config=config/network-dev.yaml --logdest std --loglevel debug
+	ncmonolit.exe  --config=cmd/core/config/network-dev.yaml --logdest std --loglevel debug
 run_local: build start
 prepare_migrate:
 	go get -u github.com/pressly/goose/cmd/goose@v2.7.0-rc4

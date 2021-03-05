@@ -3,11 +3,11 @@ package app
 import (
 	"context"
 	"github.com/pkg/errors"
-	"github.com/shipa988/hw_otus_architect/internal/data/config"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/config"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
-	"github.com/shipa988/hw_otus_architect/internal/data/controller/server"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/controller/server"
 	"github.com/shipa988/hw_otus_architect/internal/data/repository/mysql"
-	"github.com/shipa988/hw_otus_architect/internal/domain/usecase"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/domain/usecase"
 	"net"
 	"os"
 	"os/signal"
@@ -27,7 +27,7 @@ func NewNetworkApp() *NetworkApp {
 func (p *NetworkApp) Start(cfg *config.Config) (err error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	repo:=mysql.NewMySqlRepo()
-	err=repo.Connect(ctx,cfg.DB)
+	err=repo.Connect(ctx,cfg.DB.Provider, cfg.DB.Login, cfg.DB.Password, cfg.DB.Master, cfg.DB.Name,cfg.DB.Slaves)
 	if err != nil {
 		return errors.Wrapf(err, ErrStart)
 	}

@@ -18,14 +18,14 @@ package cmd
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/shipa988/hw_otus_architect/internal/data/app"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/app"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/shipa988/hw_otus_architect/internal/data/config"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/config"
 	"github.com/spf13/viper"
 )
 

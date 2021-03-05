@@ -1,8 +1,8 @@
 .idea/*
 
-config/network-heroku.yaml
-config/network-prod.yaml
-config/network-vpn.yaml
+cmd/core/config/network-heroku.yaml
+cmd/core/config/network-prod.yaml
+cmd/core/config/network-vpn.yaml
 # Binaries for programs and plugins
 *.exe
 *.log

@@ -15,7 +15,9 @@ limitations under the License.
 */
 package main
 
-import "github.com/shipa988/hw_otus_architect/cmd"
+import (
+	"github.com/shipa988/hw_otus_architect/cmd/core/cmd"
+)
 
 func main() {
 	cmd.Execute()

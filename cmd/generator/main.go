@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/shipa988/hw_otus_architect/internal/data/config"
+	"github.com/shipa988/hw_otus_architect/cmd/generator/internal/data/config"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/shipa988/hw_otus_architect/internal/data/repository/mysql"
-	"github.com/shipa988/hw_otus_architect/internal/domain/usecase"
+	"github.com/shipa988/hw_otus_architect/cmd/generator/internal/domain/usecase"
 	"github.com/spf13/viper"
 	"strconv"
 	"strings"
@@ -49,7 +49,7 @@ func Generate(gencount int) {
 		log.Fatal(err)
 	}
 	repo := mysql.NewMySqlRepo()
-	err = repo.Connect(ctx, cfg.DB)
+	err = repo.Connect(ctx,cfg.DB.Provider, cfg.DB.Login, cfg.DB.Password, cfg.DB.Master, cfg.DB.Name,cfg.DB.Slaves)
 	if err != nil {
 		log.Fatal(err)
 	}

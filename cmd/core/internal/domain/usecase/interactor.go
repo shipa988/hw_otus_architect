@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/shipa988/hw_otus_architect/internal/domain/entity"
 	"github.com/twinj/uuid"
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
 	"time"
@@ -159,10 +159,10 @@ func (i Interactor) VerifyUser(token string, tokenType string) (sessionId,userId
 	var uuidKey=""
 	switch tokenType {
 	case "at":
-		secret=ACCESS_SECRET
+		secret= ACCESS_SECRET
 		uuidKey="access_uuid"
 	case "rt":
-		secret=REFRESH_SECRET
+		secret= REFRESH_SECRET
 		uuidKey="refresh_uuid"
 	default:
 		return "", "",errors.New("token type is invalid")

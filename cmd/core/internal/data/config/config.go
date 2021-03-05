@@ -3,12 +3,12 @@ package config
 import "time"
 
 type Config struct {
-	Log                 Log                `yaml:"log"`//if logging to file
-	Name                string             `yaml:"name"`//app name in logs
-	Env                 string             `yaml:"env"`//prod or dev
-	API      API    `yaml:"api"`
-	DB       DB     `yaml:"db"`
-	Port           string        `yaml:"port"`
+	Log  Log    `yaml:"log"`  //if logging to file
+	Name string `yaml:"name"` //app name in logs
+	Env  string `yaml:"env"`  //prod or dev
+	API  API    `yaml:"api"`
+	DB   DB     `yaml:"db"`
+	Port string `yaml:"port"`
 }
 type Log struct {
 	File  string `yaml:"file"`

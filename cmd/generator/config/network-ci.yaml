@@ -1,0 +1,17 @@
+log:
+  file:  ./social_network_core.log
+name: "social_network_core"
+env: "dev"
+port:  4444
+api:
+  readtimeout: 2000
+  writetimeout: 2000
+db:
+  provider: "mysql"
+  master: "master:3306"
+  slaves:
+    - "slave1:3307"
+    - "slave2:3308"
+  login: "user"
+  password: "userpw"
+  name: "networkcore"

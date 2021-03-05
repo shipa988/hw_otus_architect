@@ -6,7 +6,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
-	"github.com/shipa988/hw_otus_architect/internal/data/config"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/shipa988/hw_otus_architect/internal/domain/entity"
 	"time"
@@ -55,13 +54,13 @@ func (repo *mySqlRepo) connect(ctx context.Context,provider, login, password, ad
 	log.Info("connected to mysql server [%v]", addr)
 	return db,nil
 }
-func (repo *mySqlRepo) Connect(ctx context.Context, cfg config.DB) (err error) {
-	repo.master,err=repo.connect(ctx,cfg.Provider, cfg.Login, cfg.Password, cfg.Master, cfg.Name)
+func (repo *mySqlRepo) Connect(ctx context.Context, Provider, Login, Password, Master, Name string,Slaves []string) (err error) {
+	repo.master,err=repo.connect(ctx,Provider, Login, Password, Master, Name)
 	if err != nil {
 		return err
 	}
-	for _, slave := range cfg.Slaves {
-		slavedb,err:=repo.connect(ctx,cfg.Provider, cfg.Login, cfg.Password, slave, cfg.Name)
+	for _, slave := range Slaves {
+		slavedb,err:=repo.connect(ctx,Provider, Login, Password, slave, Name)
 		if err != nil {
 			return err
 		}
