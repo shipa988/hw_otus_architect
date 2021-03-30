@@ -20,125 +20,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9c41e8e2-c454-4109-8ec5-aace502a477b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/cmd/generator/config/network-ci.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/generator/config/network-dev.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Dockerfile-news" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/core/internal/data/controller/grpcclient/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/news/config/network-prod.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/entity/news.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/usecases/newsQueue.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/mynews.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/news.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/static/styles/font-awesome.min.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/root.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/cmd/root.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/network-ci.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/config/network-ci.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/network-dev.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/config/network-dev.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator/botgenerate.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/generator/botgenerate.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile-prod" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile-prod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/config/network-ci.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/config/network-dev.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/config/network-dev.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/internal/data/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/app/app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/internal/data/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/internal/data/controller/server/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/controller/server/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/internal/data/controller/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/controller/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/internal/domain/usecase/interactor.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/domain/usecase/interactor.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/core/internal/domain/usecase/networkcore.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/domain/usecase/networkcore.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/data/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/app/app.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/data/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/data/controller/server/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/controller/server/handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/data/controller/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/controller/server/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/data/controller/server/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/data/controller/server/util.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/usecase/interactor.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/domain/usecase/interactor.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/usecase/networkcore.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/internal/domain/usecase/networkcore.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/404.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/404.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/friends.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/friends.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/main.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/maintmpl.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/maintmpl.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/messages.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/messages.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300italic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300italic.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300italic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300italic.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300italic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300italic.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-300italic.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-300italic.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500italic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500italic.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500italic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500italic.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500italic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500italic.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-500italic.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-500italic.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-600.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-600.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-600.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-600.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-600.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-600.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-600.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-600.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-600.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-600.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700italic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700italic.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700italic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700italic.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700italic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700italic.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-700italic.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-700italic.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800italic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800italic.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800italic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800italic.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800italic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800italic.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-800italic.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-800italic.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-900.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-900.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-900.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-900.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-900.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-900.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-900.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-900.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-900.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-900.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-italic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-italic.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-italic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-italic.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-italic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-italic.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-italic.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-italic.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-regular.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-regular.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-regular.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-regular.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-regular.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-regular.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-regular.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-regular.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/poppins-v5-latin-regular.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/poppins-v5-latin-regular.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-700italic.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-italic.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.eot" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.eot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.svg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.woff" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.woff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/fonts/poppins/roboto-condensed-v16-latin-regular.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/ico/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/ico/favicon.ico" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/agent-2.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/agent-2.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/avatar_g2.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/avatar_g2.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/bandmember.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/bandmember.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/female.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/female.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/male.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/male.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/other.png" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/other.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/signin-image.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/signin-image.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/img/signup-image.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/img/signup-image.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/js/jquery.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/js/jquery.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/styles/messages.css" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/styles/messages.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static/styles/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/core/web/static/styles/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/data/repository/mysql/repo.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/data/repository/mysql/repo.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/domain/entity/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/entity/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/maintmpl.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/maintmpl.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/js/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/static/styles/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/static/styles/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,10 +95,17 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/cmd/news/config" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\cmd\news\config" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\cmd\core\config" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web" />
+      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web\static\styles" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\test\go\src\github.com\shipa988\hw_otus_architect\cmd\core" />
       <recent name="C:\Users\test\go\src\github.com\shipa988\hw_otus_architect\cmd\core\internal\domain" />
@@ -197,48 +113,70 @@
       <recent name="C:\Users\test\go\src\github.com\shipa988\hw_otus_architect\cmd" />
       <recent name="C:\Users\test\go\src\github.com\shipa988\hw_otus_architect\cmd\core\cmd" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\config" />
-      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web\static\styles" />
-      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\web" />
-      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect" />
-      <recent name="C:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\internal\domain\entity" />
-    </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build botgenerate.go">
-    <configuration name="go build botgenerate.go (1)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Docker.docker-compose.yml.ncmonolit: Compose Deployment">
+    <configuration name="go build github.com/shipa988/hw_otus_architect/cmd/core" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="hw_otus_architect" />
       <working_directory value="$PROJECT_DIR$" />
+      <parameters value="cmd/news/main.go --config=cmd/core/config/network-dev.yaml --logdest std --loglevel debug" />
+      <envs>
+        <env name="PORT" value="" />
+      </envs>
       <kind value="PACKAGE" />
-      <filePath value="$PROJECT_DIR$/generator/botgenerate.go" />
-      <package value="github.com/shipa988/hw_otus_architect" />
+      <filePath value="$PROJECT_DIR$/cmd/core/main.go" />
+      <package value="github.com/shipa988/hw_otus_architect/cmd/core" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="go build botgenerate.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+    <configuration name="go build github.com/shipa988/hw_otus_architect/cmd/news" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="hw_otus_architect" />
       <working_directory value="$PROJECT_DIR$" />
+      <parameters value="cmd/news/main.go --config=cmd/news/config/network-dev.yaml --logdest std --loglevel debug" />
       <kind value="PACKAGE" />
-      <filePath value="$PROJECT_DIR$/generator/botgenerate.go" />
-      <package value="github.com/shipa988/hw_otus_architect" />
+      <filePath value="$PROJECT_DIR$/cmd/news/main.go" />
+      <package value="github.com/shipa988/hw_otus_architect/cmd/news" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="go build github.com/shipa988/hw_otus_architect" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="hw_otus_architect" />
-      <working_directory value="$PROJECT_DIR$" />
-      <parameters value="--config=c:\Users\redse\go\src\github.com\shipa988\hw_otus_architect\config/network-heroku.yaml --logdest std --loglevel debug" />
-      <kind value="PACKAGE" />
-      <filePath value="$PROJECT_DIR$/main.go" />
-      <package value="github.com/shipa988/hw_otus_architect" />
-      <directory value="$PROJECT_DIR$" />
+    <configuration name="run_news" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="run_news" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml.nats: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="nats" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml.ncmonolit: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="ncmonolit" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build botgenerate.go" />
-        <item itemvalue="Go Build.go build botgenerate.go (1)" />
-        <item itemvalue="Go Build.go build github.com/shipa988/hw_otus_architect" />
+        <item itemvalue="Docker.docker-compose.yml.ncmonolit: Compose Deployment" />
+        <item itemvalue="Docker.docker-compose.yml.ncmonolit: Compose Deployment" />
+        <item itemvalue="Go Build.go build github.com/shipa988/hw_otus_architect/cmd/news" />
+        <item itemvalue="Go Build.go build github.com/shipa988/hw_otus_architect/cmd/core" />
+        <item itemvalue="Makefile.run_news" />
       </list>
     </recent_temporary>
   </component>
@@ -266,21 +204,26 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
   </component>
-  <component name="WindowStateProjectService">
-    <state x="1946" y="185" key="FileChooserDialogImpl" timestamp="1614867217030">
-      <screen x="1366" y="0" width="1600" height="860" />
-    </state>
-    <state x="1946" y="185" key="FileChooserDialogImpl/0.0.1366.728/1366.0.1600.860@1366.0.1600.860" timestamp="1614867217030" />
-  </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/news/internal/data/controller/cache/cache.go</url>
+          <line>108</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="GoApplicationRunConfiguration">
         <watch expression="surname" />
         <watch expression="faker.RandomChoice([]string{&quot;Male&quot;, &quot;Female&quot;, &quot;Other&quot;})" />
+        <watch expression="*(*&quot;google.golang.org/grpc/metadata.MD&quot;)(824638550832)" />
       </configuration>
     </watches-manager>
   </component>

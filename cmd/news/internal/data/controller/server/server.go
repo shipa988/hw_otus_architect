@@ -5,8 +5,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/pkg/errors"
-	"github.com/shipa988/hw_otus_architect/cmd/core/internal/domain/usecase"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
+	"github.com/shipa988/hw_otus_architect/cmd/news/internal/domain/usecase"
 	"net/http"
 	"path"
 	"strconv"
@@ -18,14 +18,13 @@ const (
 	LayoutDateISO = "2006-01-02"
 )
 const (
-	ErrID          = "must be id in query"
-	ErrServer      = "Internal Server Error"
-	errAuth        = "can't authorize user"
+	ErrID = "must be id in query"
+	ErrServer = "Internal Server Error"
+	errAuth = "can't authorize user"
 	errTokenVerify = "can't verify token"
 )
-
 type httpServer struct {
-	server      *http.Server
+	server *http.Server
 	networkcore usecase.NetworkCore
 }
 
@@ -34,7 +33,7 @@ func NewHttpServer(addr string, networkcore usecase.NetworkCore) *httpServer {
 		Addr: addr,
 	}
 	return &httpServer{
-		server:      server,
+		server: server,
 		networkcore: networkcore,
 	}
 }
@@ -45,16 +44,12 @@ func (s *httpServer) Serve() error {
 	privateMux := http.NewServeMux()
 	privateMux.HandleFunc("/profile", s.profile)
 	privateMux.HandleFunc("/friends", s.friends)
-	privateMux.HandleFunc("/", s.news)
 	privateMux.HandleFunc("/subscribe", s.subscribe)
 	privateMux.HandleFunc("/getpeople", s.getpeople)
-	privateMux.HandleFunc("/getnews", s.getnews)
-	privateMux.HandleFunc("/getmynews", s.getmynews)
-	privateMux.HandleFunc("/postnews", s.postnews)
 	privateMux.HandleFunc("/search", s.search)
 	privateMux.HandleFunc("/logout", s.logout)
 	privateMux.HandleFunc("/messages", s.messages)
-	privateMux.HandleFunc("/myprofile", s.mainPage)
+	privateMux.HandleFunc("/", s.mainPage)
 	privateHandler := s.authMiddleware(privateMux)
 
 	publicMux := http.NewServeMux()
@@ -81,9 +76,10 @@ func (s *httpServer) Serve() error {
 	return nil
 }
 
+
 func (s *httpServer) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx, err := s.tokenVerify(r, "at")
+		ctx,err := s.tokenVerify(r, "at")
 		if err != nil {
 			log.Error(errors.Wrap(err, errAuth))
 			http.Redirect(w, r, "/login", 302)
@@ -93,20 +89,20 @@ func (s *httpServer) authMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *httpServer) tokenVerify(r *http.Request, tokenType string) (context.Context, error) {
+func (s *httpServer) tokenVerify(r *http.Request, tokenType string) (context.Context,error) {
 	cookie, err := r.Cookie(tokenType)
 	if err != nil {
-		return nil, errors.Wrap(err, errTokenVerify)
+		return nil,errors.Wrap(err, errTokenVerify)
 	}
 	token, err := base64.StdEncoding.DecodeString(cookie.Value)
 	if err != nil {
-		return nil, errors.Wrap(err, errTokenVerify)
+		return nil,errors.Wrap(err, errTokenVerify)
 	}
-	sessionUuid, userID, err := s.networkcore.VerifyUser(string(token), tokenType)
+	sessionUuid,userID, err := s.networkcore.VerifyUser(string(token), tokenType)
 	if err != nil {
-		return nil, errors.Wrap(err, errTokenVerify)
+		return nil,errors.Wrap(err, errTokenVerify)
 	}
-	return SetUserID(SetSessionUUID(r.Context(), sessionUuid), userID), nil
+	return SetUserID(SetSessionUUID(r.Context(), sessionUuid), userID),nil
 }
 
 func (s *httpServer) StopServe() {
@@ -173,7 +169,7 @@ func (s *httpServer) corsHandler(next http.Handler) http.Handler {
 	})
 }
 
-func (s *httpServer) httpError(w http.ResponseWriter, r *http.Request, error string, code int) {
+func (s *httpServer) httpError(w http.ResponseWriter,  r *http.Request,error string, code int) {
 	log.Error(error)
 	http.Redirect(w, r, "/404", 302)
 }
@@ -186,3 +182,8 @@ func (s *httpServer) httpAnswer(w http.ResponseWriter, msg interface{}, code int
 	w.WriteHeader(code)
 	w.Write(jmsg) //nolint:errcheck
 }
+
+
+
+
+

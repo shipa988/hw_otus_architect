@@ -1,0 +1,56 @@
+log:
+  file:  ./social_network_core.log
+name: "social_network_core"
+env: "dev"
+port:  4446
+grpcport:  4445
+cache:
+  size: 1000
+queue:
+  natsconnection:
+    dataconnection:
+      provider: ""
+      address: "34.78.250.240"
+      port: "4222"
+      login: ""
+      password: ""
+      name: "nats"
+    timeoutms: 500
+    pingintervalms: 100
+    maxpingsoutstanding: 5
+    reconnectwait: 10
+    reconnectbufsize: 1048576
+  hub:
+    stanconnection:
+      clusterid: "devenv"
+      clientid: "hubclient-2"
+      subjectpublish: "hubnews"
+      maxpubacksinflight: 100
+      groupname: "hubnews-group"
+      durablename: "durable-group"
+      maxwithoutack: 100
+      ackwaittimesec: 10
+      ackwaitdelay: 10
+  news:
+    stanconnection:
+      clusterid: "devenv"
+      clientid: "subclient-2"
+      subjectpublish: "subnews"
+      maxpubacksinflight: 100
+      groupname: "subnews-group"
+      durablename: "durable-group"
+      maxwithoutack: 100
+      ackwaittimesec: 10
+      ackwaitdelay: 10
+api:
+  readtimeout: 2000
+  writetimeout: 2000
+db:
+  provider: "mysql"
+  master: "35.206.180.233:3306"
+  slaves:
+    - "34.78.209.239:3306"
+    - "34.77.232.243:3306"
+  login: "user"
+  password: "userpw"
+  name: "networkcore"

@@ -4,8 +4,10 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/config"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/controller/grpcclient"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/controller/server"
+	"github.com/shipa988/hw_otus_architect/internal/data/controller/queue"
 	"github.com/shipa988/hw_otus_architect/internal/data/repository/mysql"
 	"github.com/shipa988/hw_otus_architect/cmd/core/internal/domain/usecase"
 	"net"
@@ -31,7 +33,19 @@ func (p *NetworkApp) Start(cfg *config.Config) (err error) {
 	if err != nil {
 		return errors.Wrapf(err, ErrStart)
 	}
- 	core:=usecase.NewInteractor(repo,repo,repo,15)
+	hubQueue := queue.NewSTANQueue(cfg.NewsService.Queue.Hub.Stanconnection, cfg.NewsService.Queue.Natsconnection)
+	err = hubQueue.Connect(ctx)
+	if err != nil {
+		log.Error(errors.Wrap(err, "can't start hub of news"))
+		return
+	}
+
+	hubService := queue.NewPublisher(hubQueue)
+	newsService,err:=grpcclient.NewGRPCClient(cfg.NewsService.Address)
+	if err != nil {
+		return errors.Wrapf(err, ErrStart)
+	}
+ 	core:=usecase.NewInteractor(repo,repo,repo,repo,hubService,newsService,15)
 	server := server.NewHttpServer(net.JoinHostPort("0.0.0.0",cfg.Port),core)
 
 	wg := &sync.WaitGroup{}

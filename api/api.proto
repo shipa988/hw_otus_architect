@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+option go_package = ".;grpcservice";
+
+message OneNews {
+  uint64 id = 1;
+  uint64 author = 2;
+  string title = 3;
+  google.protobuf.Timestamp datetime = 4;
+  string content = 5;
+  string authorName = 6;
+  string authorSurname = 7;
+  string authorGen = 8;
+
+}
+message News{
+  repeated OneNews oneNews = 1;
+}
+
+message GetNewsRequest {
+  string userid = 1;
+}
+
+message GetNewsResponse {
+  News news = 1;
+}
+
+service NewsService {
+  rpc GetNews(GetNewsRequest) returns (GetNewsResponse) {
+    option (google.api.http) = {
+      get: "/news/{userid}"
+    };
+  }
+}

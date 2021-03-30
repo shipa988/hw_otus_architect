@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	ErrAdd = "can't add new rows to table"
-	ErrGet = "can't get profiles from db"
+	ErrAdd     = "can't add new rows to table"
+	ErrGet     = "can't get profiles from db"
+	ErrGetNews = "can't get news from db"
 )
 
 const (
@@ -25,10 +26,28 @@ const (
 var _ entity.UserRepository = (*mySqlRepo)(nil)
 var _ entity.ProfileRepository = (*mySqlRepo)(nil)
 var _ entity.UserAuthRepository = (*mySqlRepo)(nil)
+var _ entity.NewsRepository = (*mySqlRepo)(nil)
 
 type mySqlRepo struct {
 	master *sql.DB
 	slaves []*sql.DB
+}
+
+func (repo *mySqlRepo) SaveNews(ctx context.Context, authorId uint64, title, text string) error {
+	_, err := repo.master.ExecContext(ctx, "INSERT INTO News (`UserId`,`Title`,`Content`)VALUES(?,?,?);", authorId, title,text)
+	if err != nil {
+		return errors.Wrap(err, "can't save news in repo")
+	}
+	return nil
+}
+
+func (repo *mySqlRepo) GetNews(ctx context.Context, authorId uint64, limit int) ([]entity.News, error) {
+	rows, err := repo.master.QueryContext(ctx, `select Id,UserId,Title,Content,Dt from News where UserId=? order by Dt desc limit ?;`, authorId, limit)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, SQLError(err, ErrGetNews)
+	}
+	defer rows.Close()
+	return repo.rowsToNews(rows, ErrGetNews)
 }
 
 func NewMySqlRepo() *mySqlRepo {
@@ -37,10 +56,10 @@ func NewMySqlRepo() *mySqlRepo {
 func (repo *mySqlRepo) getSlave(userId uint64) *sql.DB {
 	return repo.slaves[userId%uint64(len(repo.slaves))]
 }
-func (repo *mySqlRepo) connect(ctx context.Context,provider, login, password, addr, name string) (db *sql.DB,err error) {
-	db, err = sql.Open(provider, fmt.Sprintf("%v:%v@tcp(%v)/%v", login, password, addr, name))
+func (repo *mySqlRepo) connect(ctx context.Context, provider, login, password, addr, name string) (db *sql.DB, err error) {
+	db, err = sql.Open(provider, fmt.Sprintf("%v:%v@tcp(%v)/%v?parseTime=true"/*&loc=%v"*/, login, password, addr, name/*,url.QueryEscape("Europe/Moscow")*/))
 	if err != nil {
-		return nil,errors.Wrap(err, connectErr)
+		return nil, errors.Wrap(err, connectErr)
 	}
 	db.SetConnMaxLifetime(time.Minute * 3)
 	db.SetMaxOpenConns(100)
@@ -49,18 +68,18 @@ func (repo *mySqlRepo) connect(ctx context.Context,provider, login, password, ad
 	db.Stats()
 	err = db.PingContext(ctx)
 	if err != nil {
-		return nil,errors.Wrap(err, connectErr)
+		return nil, errors.Wrap(err, connectErr)
 	}
 	log.Info("connected to mysql server [%v]", addr)
-	return db,nil
+	return db, nil
 }
-func (repo *mySqlRepo) Connect(ctx context.Context, Provider, Login, Password, Master, Name string,Slaves []string) (err error) {
-	repo.master,err=repo.connect(ctx,Provider, Login, Password, Master, Name)
+func (repo *mySqlRepo) Connect(ctx context.Context, Provider, Login, Password, Master, Name string, Slaves []string) (err error) {
+	repo.master, err = repo.connect(ctx, Provider, Login, Password, Master, Name)
 	if err != nil {
 		return err
 	}
 	for _, slave := range Slaves {
-		slavedb,err:=repo.connect(ctx,Provider, Login, Password, slave, Name)
+		slavedb, err := repo.connect(ctx, Provider, Login, Password, slave, Name)
 		if err != nil {
 			return err
 		}
@@ -107,6 +126,15 @@ func (repo *mySqlRepo) GetFriendsById(ctx context.Context, id uint64, limit int,
 	}
 	defer rows.Close()
 	return repo.rowsToUsers(rows, ErrGet)
+}
+
+func (repo *mySqlRepo) GetSubscribersIdById(ctx context.Context, id uint64) ([]uint64, error) {
+	rows, err := repo.getSlave(id).QueryContext(ctx, `select UserId from Friends where FriendId=?;`, id)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, SQLError(err, ErrGet)
+	}
+	defer rows.Close()
+	return repo.rowsToUserIds(rows, ErrGet)
 }
 
 func (repo *mySqlRepo) FilterByNameSurName(ctx context.Context, myuId uint64, name, surname string, limit int, lastID uint64) ([]entity.User, error) {
@@ -260,6 +288,46 @@ func (repo *mySqlRepo) SaveUsersBatch(ctx context.Context, users []entity.User) 
 			return errors.Wrapf(err, ErrAdd)
 		}*/
 	return nil
+}
+
+func (repo *mySqlRepo) rowsToNews(rows *sql.Rows, errorString string) ([]entity.News, error) {
+	var news []entity.News
+	for rows.Next() {
+		onenews := entity.News{}
+		err := rows.Scan(&onenews.Id,&onenews.AuthorId, &onenews.Title, &onenews.Text, &onenews.Time)
+		switch {
+		case err == sql.ErrNoRows:
+			return nil, nil
+		case err != nil:
+			return nil, errors.Wrap(err, "convert rows to news error")
+		}
+		news = append(news, onenews)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, SQLError(err, errorString)
+	}
+	return news, nil
+}
+
+func (repo *mySqlRepo) rowsToUserIds(rows *sql.Rows, errorString string) ([]uint64, error) {
+	var users []uint64
+	for rows.Next() {
+		var user uint64
+		err := rows.Scan(&user)
+		switch {
+		case err == sql.ErrNoRows:
+			return nil, nil
+		case err != nil:
+			return nil, errors.Wrap(err, "convert rows to users error")
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, SQLError(err, errorString)
+	}
+	return users, nil
 }
 
 func (repo *mySqlRepo) rowsToUsers(rows *sql.Rows, errorString string) ([]entity.User, error) {

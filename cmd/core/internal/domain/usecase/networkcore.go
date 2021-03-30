@@ -21,4 +21,8 @@ type NetworkCore interface {
 	GetPeople(myuId uint64,searchName,searchSurname string, limit int, lastID uint64) ([]entity.User, error)
 	Subscribe(fromId uint64,toId uint64) error
 	UnSubscribe(fromId uint64,toId uint64) error
+
+	SaveNews(myuId uint64,title,text string) (error)
+	GetNews(myuId uint64) ([]entity.News, error)
+	GetMyNews(myuId uint64) ([]entity.News, error)
 }

@@ -18,8 +18,6 @@ var (
 	othertemplate   = template.Must(template.ParseFiles(path.Join("web", "profile.html"), path.Join("web", "maintmpl.html")))
 	signuptemplate  = template.Must(template.ParseFiles(path.Join("web", "signup.html")))
 	friendstemplate = template.Must(template.ParseFiles(path.Join("web", "friends.html"), path.Join("web", "maintmpl.html")))
-	newstemplate    = template.Must(template.ParseFiles(path.Join("web", "news.html"), path.Join("web", "maintmpl.html")))
-	postnewstemplate    = template.Must(template.ParseFiles(path.Join("web", "mynews.html"), path.Join("web", "maintmpl.html")))
 	searchtemplate  = template.Must(template.ParseFiles(path.Join("web", "search.html"), path.Join("web", "maintmpl.html")))
 	_404template    = template.Must(template.ParseFiles(path.Join("web", "404.html")))
 )
@@ -79,7 +77,7 @@ func (s *httpServer) mainPage(w http.ResponseWriter, r *http.Request) {
 func (s *httpServer) loginPage(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		ref := r.Header.Get("Referer")
+		ref:=r.Header.Get("Referer")
 		//check refresh token
 		ctx, err := s.tokenVerify(r, "rt")
 		if err != nil {
@@ -104,7 +102,7 @@ func (s *httpServer) loginPage(w http.ResponseWriter, r *http.Request) {
 		}
 		addCookie(w, "/login", "rt", refreshtoken, time.Hour*24*7)
 		addCookie(w, "/", "at", accesstoken, time.Minute*15)
-		redir, err := url.Parse(ref)
+		redir,err:=url.Parse(ref)
 		if err != nil {
 			log.Error(errors.Wrapf(err, "can't perform true redirect fro user '%v'", userID))
 			http.Redirect(w, r, "/", 302)
@@ -214,7 +212,7 @@ func (s *httpServer) profile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *httpServer) getpeople(w http.ResponseWriter, r *http.Request) {
+func (s *httpServer) getNews http.ResponseWriter, r *http.Request) {
 	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
 	if err != nil {
 		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
@@ -249,84 +247,6 @@ func (s *httpServer) getpeople(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.httpAnswer(w, "", 200)
-}
-
-func (s *httpServer) getnews(w http.ResponseWriter, r *http.Request) {
-	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
-	if err != nil {
-		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
-	}
-
-	news, err := s.networkcore.GetNews(myid)
-	if err != nil {
-		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
-	}
-	s.httpAnswer(w, news, 200)
-	return
-
-	s.httpAnswer(w, "", 200)
-}
-
-func (s *httpServer) getmynews(w http.ResponseWriter, r *http.Request) {
-	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
-	if err != nil {
-		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
-	}
-
-	news, err := s.networkcore.GetMyNews(myid)
-	if err != nil {
-		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
-	}
-	s.httpAnswer(w, news, 200)
-	return
-
-	s.httpAnswer(w, "", 200)
-}
-
-func (s *httpServer) news(w http.ResponseWriter, r *http.Request) {
-	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
-	if err != nil {
-		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
-	}
-	switch r.Method {
-	case http.MethodGet:
-		if e := newstemplate.Execute(w, struct {
-			Err   bool
-			Title string
-			Id    uint64
-		}{Err: false, Title: "News", Id: myid}); e != nil {
-			s.httpError(w, r, errors.Wrap(e, ErrServer).Error(), http.StatusInternalServerError)
-		}
-	default:
-		s.httpError(w, r, ErrServer, http.StatusBadRequest)
-	}
-}
-
-func (s *httpServer) postnews(w http.ResponseWriter, r *http.Request) {
-	myid, err := strconv.ParseUint(GetUserID(r.Context()), 10, 64)
-	if err != nil {
-		s.httpError(w, r, errors.Wrap(err, ErrServer).Error(), http.StatusInternalServerError)
-	}
-	switch r.Method {
-	case http.MethodGet:
-		if e := postnewstemplate.Execute(w, struct {
-			Err   bool
-			Title string
-			Id    uint64
-		}{Err: false, Title: "My News", Id: myid}); e != nil {
-			s.httpError(w, r, errors.Wrap(e, ErrServer).Error(), http.StatusInternalServerError)
-		}
-	case http.MethodPost:
-		r.ParseForm()
-		title := r.FormValue("title")
-		content := r.FormValue("content")
-		err := s.networkcore.SaveNews(myid, title, content)
-		if err != nil {
-			log.Error(errors.Wrapf(err, "can't save news for user %v", myid))
-		}
-	default:
-		s.httpError(w, r, ErrServer, http.StatusBadRequest)
-	}
 }
 
 func (s *httpServer) friends(w http.ResponseWriter, r *http.Request) {
@@ -387,6 +307,7 @@ func (s *httpServer) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 	s.httpAnswer(w, "", 200)
 }
+
 func addCookie(w http.ResponseWriter, path, name, value string, ttl time.Duration) {
 	expire := time.Now().Add(ttl)
 	cookie := http.Cookie{

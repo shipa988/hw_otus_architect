@@ -19,7 +19,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ncmonolit ./cmd/core/.
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ncnews ./cmd/news/.
 
 ######## Start a new stage from scratch #######
 FROM alpine:latest
@@ -27,12 +27,11 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
-RUN mkdir web
+
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/ncmonolit .
-COPY --from=builder /app/cmd/core/config/network-prod.yaml .
-COPY --from=builder /app/web/ web/
-RUN cd /root/web
+COPY --from=builder /app/ncnews .
+COPY --from=builder /app/cmd/news/config/network-prod.yaml .
+
 RUN ls
 # Command to run the executable
-CMD ["./ncmonolit","--config","network-prod.yaml","--logdest", "std", "--loglevel", "debug"]
+CMD ["./ncnews","--config","network-prod.yaml","--logdest", "std", "--loglevel", "debug"]

@@ -15,3 +15,30 @@ db:
   login: "user"
   password: "userpw"
   name: "networkcore"
+newsservice:
+  address: "localhost:4445"
+  queue:
+    natsconnection:
+      dataconnection:
+        provider: ""
+        address: "34.78.250.240"
+        port: "4222"
+        login: ""
+        password: ""
+        name: "nats"
+      timeoutms: 500
+      pingintervalms: 100
+      maxpingsoutstanding: 5
+      reconnectwait: 10
+      reconnectbufsize: 1048576
+    hub:
+      stanconnection:
+        clusterid: "devenv"
+        clientid: "hubpublisher-2"
+        subjectpublish: "hubnews"
+        maxpubacksinflight: 100
+        groupname: "hubnews-group"
+        durablename: "durable-group"
+        maxwithoutack: 100
+        ackwaittimesec: 10
+        ackwaitdelay: 10

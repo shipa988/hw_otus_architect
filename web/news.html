@@ -1,0 +1,11 @@
+{{block "main_header" .}}{{end}}
+<h2>{{.Title}}</h2>
+<div id="contDiv">
+    <ul id='news-list' class="list-group">
+    </ul>
+</div>
+<script src="static/js/main.js"></script>
+<script>
+    window.onload = loadnews(true);
+</script>
+{{block "main_footer" .}}{{end}}

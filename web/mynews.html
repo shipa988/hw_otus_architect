@@ -1,0 +1,25 @@
+{{block "main_header" .}}{{end}}
+<h2 class="form-title">{{.Title}}</h2>
+<div></div>
+<form method="POST">
+    <div class="form-group">
+        <input type="text" name="title" id="title" placeholder="Title">
+    </div>
+    <div class="form-group">
+        <input type="text" name="content" id="content" placeholder="Content">
+    </div>
+    <div class="form-group form-button">
+        <input onclick="newElement()" type="button" name="save" id="save" class="form-submit" value="Save">
+    </div>
+</form>
+<div></div>
+<div id="contDiv">
+    <ul id='news-list' class="list-group">
+    </ul>
+</div>
+
+<script src="static/js/main.js"></script>
+<script>
+    window.onload = loadmynews();
+</script>
+{{block "main_footer" .}}{{end}}

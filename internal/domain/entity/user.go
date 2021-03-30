@@ -25,6 +25,7 @@ type User struct {
 type UserRepository interface {
 	GetUserById(ctx context.Context, id uint64) (User, error)
 	GetFriendsById(ctx context.Context, id uint64, limit int, lastID uint64) ([]User, error)
+	GetSubscribersIdById(ctx context.Context, id uint64) ([]uint64, error)
 	GetUserAuth(ctx context.Context, login string) (uint64,string,error)
 	SaveUser(ctx context.Context, user User) error
 	Validate(ctx context.Context, login, pass string) (bool, error)

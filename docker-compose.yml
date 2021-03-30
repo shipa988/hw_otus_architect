@@ -10,6 +10,16 @@ services:
       - db
     ports:
       - 80:4444
+  ncnews:
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile-news
+    depends_on:
+      - db
+    ports:
+      - 4445:4445
+      - 81:4446
   db:
     image: mysql:latest
     volumes:
@@ -26,6 +36,22 @@ services:
       MYSQL_DATABASE: networkcore
       MYSQL_USER: user
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+#  nats:
+#   image: "nats:2.1.8"
+#    restart: always
+#    ports:
+#      - "4222:4222"
+#      - "8222:8222"
+#  stan:
+#    image: "nats-streaming:0.18.0"
+#    restart: always
+#    depends_on:
+#      - nats
+#    volumes:
+#      - "./stan:/data"
+#    command:
+#      - "--cluster_id=devenv"
+#      - "--nats_server=nats://nats:4222"
 volumes:
   my-db:
   my-log:

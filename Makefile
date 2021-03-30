@@ -20,12 +20,19 @@ testv: dep_install
 	go test -v -race ./...
 prepare_lint:
 	go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
+prepare_gen:
+		go get \
+            github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
+            github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger \
+            github.com/golang/protobuf/protoc-gen-go
 lint: prepare_lint fmt tidy
 	golangci-lint run ./...
 fmt:
 	go fmt ./...
 run: #dep_install
 	go run cmd/core/main.go --config=cmd/core/config/network-dev.yaml --logdest std --loglevel debug
+run_news: #dep_install
+	go run cmd/news/main.go --config=cmd/news/config/network-dev.yaml --logdest std --loglevel debug
 build: dep_install
 	go build -o ncmonolit.exe  cmd/core/main.go
 start:

@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
+	"github.com/shipa988/hw_otus_architect/cmd/core/internal/data/controller/grpcclient"
 	"github.com/shipa988/hw_otus_architect/internal/data/controller/log"
 	"github.com/shipa988/hw_otus_architect/internal/domain/entity"
+	"github.com/shipa988/hw_otus_architect/internal/domain/usecases"
 	"github.com/twinj/uuid"
-	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
 	"time"
@@ -25,12 +27,14 @@ const (
 	errSignUp        = "can't signup user '%v'"
 	errGetProfile    = "can't get user profile by id '%v'"
 	errGetFriends    = "can't get friends for id '%v'"
-	errGetPeople    = "can't get peolple for by %v and %v"
-	errSubscribe    = "can't subscribe user id '%v' to user id '%v'"
-	errUnSubscribe    = "can't unsubscribe user id '%v' to user id '%v'"
-	errSaveProfile      = "can't set user profile for id '%v'"
+	errGetPeople     = "can't get peolple for by %v and %v"
+	errSubscribe     = "can't subscribe user id '%v' to user id '%v'"
+	errUnSubscribe   = "can't unsubscribe user id '%v' to user id '%v'"
+	errSaveProfile   = "can't set user profile for id '%v'"
 	errVerifyToken   = "can't verify token '%v'"
 	errGenerateToken = "can't generate token"
+	errSaveNews      = "can't save news for user %v"
+	errGetMyNews     = "can't get news of user %v"
 )
 
 var (
@@ -41,94 +45,131 @@ var (
 var _ NetworkCore = (*Interactor)(nil)
 
 type Interactor struct {
-	userRepo entity.UserRepository
-	profileRepo entity.ProfileRepository
+	userRepo     entity.UserRepository
+	newsRepo     entity.NewsRepository
+	newsQueue    usecases.NewsPulisher
+	newsService  *grpcclient.GRPCClient
+	profileRepo  entity.ProfileRepository
 	userAuthRepo entity.UserAuthRepository
-	ctxTimeoutS time.Duration
+	ctxTimeoutS  time.Duration
 }
 
+func (i Interactor) SaveNews(myuId uint64, title, text string) error {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	n := entity.News{
+		AuthorId: myuId,
+		Title:    title,
+		Time:     time.Now(),
+		Text:     text,
+	}
+	err:=i.newsRepo.SaveNews(ctx,myuId,title,text)
+	if err != nil {
+		return errors.Wrapf(err, errSaveNews, myuId)
+	}
+	err = i.newsQueue.SaveNews(ctx, n)
+	if err != nil {
+		return errors.Wrapf(err, errSaveNews, myuId)
+	}
+	return nil
+}
 
+func (i Interactor) GetNews(myuId uint64) ([]entity.News, error) {
+	news, err := i.newsService.GetNews(myuId)
+	if err != nil {
+		return nil, err
+	}
+	return news, nil
+}
 
-func NewInteractor(userRepo entity.UserRepository, profileRepo entity.ProfileRepository, userAuthRepo entity.UserAuthRepository,ctxTimeoutS int) *Interactor {
-	return &Interactor{userRepo: userRepo, profileRepo: profileRepo, userAuthRepo: userAuthRepo,ctxTimeoutS:time.Second*time.Duration(ctxTimeoutS)}
+func (i Interactor) GetMyNews(myuId uint64) ([]entity.News, error) {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	news, err := i.newsRepo.GetNews(ctx, myuId, 1000)
+	if err != nil {
+		return nil, errors.Wrapf(err, errGetMyNews, myuId)
+	}
+	return news, nil
+}
+
+func NewInteractor(userRepo entity.UserRepository, newsRepo entity.NewsRepository, profileRepo entity.ProfileRepository, userAuthRepo entity.UserAuthRepository, newsQueue usecases.NewsPulisher, newsService *grpcclient.GRPCClient, ctxTimeoutS int) *Interactor {
+	return &Interactor{userRepo: userRepo, newsRepo:newsRepo, profileRepo: profileRepo, userAuthRepo: userAuthRepo, newsQueue: newsQueue, newsService: newsService, ctxTimeoutS: time.Second * time.Duration(ctxTimeoutS)}
 }
 
 func (i Interactor) GetFriends(userID uint64, limit int, lastID uint64) ([]entity.User, error) {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
-	friends,err:=i.userRepo.GetFriendsById(ctx,userID,limit,lastID)
+	friends, err := i.userRepo.GetFriendsById(ctx, userID, limit, lastID)
 	if err != nil {
 		return nil, errors.Wrapf(err, errGetFriends, userID)
 	}
-	return friends,nil
+	return friends, nil
 }
 
-func (i Interactor) GetPeople(myuId uint64,searchName, searchSurname string, limit int, lastID uint64) ([]entity.User, error) {
+func (i Interactor) GetPeople(myuId uint64, searchName, searchSurname string, limit int, lastID uint64) ([]entity.User, error) {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
-	people,err:=i.userRepo.FilterByNameSurName(ctx,myuId,searchName,searchSurname,limit,lastID)
+	people, err := i.userRepo.FilterByNameSurName(ctx, myuId, searchName, searchSurname, limit, lastID)
 	if err != nil {
-		return nil, errors.Wrapf(err, errGetPeople,searchName,searchSurname)
+		return nil, errors.Wrapf(err, errGetPeople, searchName, searchSurname)
 	}
-	return people,nil
+	return people, nil
 }
 
 func (i Interactor) Subscribe(fromId uint64, toId uint64) error {
-	ctx, _ := context.WithTimeout(context.TODO(),i.ctxTimeoutS)
-	err:=i.userRepo.Subscribe(ctx,fromId,toId)
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	err := i.userRepo.Subscribe(ctx, fromId, toId)
 	if err != nil {
-		return errors.Wrapf(err, errSubscribe, fromId,toId)
+		return errors.Wrapf(err, errSubscribe, fromId, toId)
 	}
 	return nil
 }
 
 func (i Interactor) UnSubscribe(fromId uint64, toId uint64) error {
-	ctx, _ := context.WithTimeout(context.TODO(),i.ctxTimeoutS)
-	err:=i.userRepo.UnSubscribe(ctx,fromId,toId)
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	err := i.userRepo.UnSubscribe(ctx, fromId, toId)
 	if err != nil {
-		return errors.Wrapf(err, errUnSubscribe, fromId,toId)
+		return errors.Wrapf(err, errUnSubscribe, fromId, toId)
 	}
 	return nil
 }
 func (i Interactor) GetMyProfile(userID uint64) (entity.User, error) {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
-	user,err:=i.userRepo.GetUserById(ctx,userID)
+	user, err := i.userRepo.GetUserById(ctx, userID)
 	if err != nil {
 		return user, errors.Wrapf(err, errGetProfile)
 	}
-	return user,nil
+	return user, nil
 }
 
 func (i Interactor) GetUserProfile(myUserID, otherUserId uint64) (*entity.Profile, error) {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
-	user,err:=i.userRepo.GetUserById(ctx,otherUserId)
+	user, err := i.userRepo.GetUserById(ctx, otherUserId)
 	if err != nil {
 		return nil, errors.Wrapf(err, errGetProfile, otherUserId)
 	}
-	isfriend,err:=i.profileRepo.IsSubscribed(ctx,myUserID,otherUserId)
-	profile:=entity.Profile{
-		User:    &user,
+	isfriend, err := i.profileRepo.IsSubscribed(ctx, myUserID, otherUserId)
+	profile := entity.Profile{
+		User:     &user,
 		IsFriend: isfriend,
 	}
-	return &profile,nil
+	return &profile, nil
 }
 
-func (i Interactor) SaveMyProfile(userID uint64,name, surName string, age string, gen string, interest string, city string) error {
+func (i Interactor) SaveMyProfile(userID uint64, name, surName string, age string, gen string, interest string, city string) error {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
-	a,err:=strconv.Atoi(age)
+	a, err := strconv.Atoi(age)
 	if err != nil {
 		log.Error(errors.Wrapf(err, errSaveProfile, userID))
 	}
-	g:=entity.Other
+	g := entity.Other
 	switch gen {
 	case "male":
-		g=entity.Male
+		g = entity.Male
 	case "female":
-		g=entity.Female
+		g = entity.Female
 	case "other":
-		g=entity.Other
+		g = entity.Other
 	default:
-		 log.Error(errors.Wrapf(errors.New("unknown gender"), errSaveProfile, userID))
+		log.Error(errors.Wrapf(errors.New("unknown gender"), errSaveProfile, userID))
 	}
-	user:=entity.User{
+	user := entity.User{
 		Id:       userID,
 		Name:     name,
 		SurName:  surName,
@@ -137,72 +178,71 @@ func (i Interactor) SaveMyProfile(userID uint64,name, surName string, age string
 		Interest: interest,
 		City:     city,
 	}
-	err=i.userRepo.SaveUser(ctx,user)
+	err = i.userRepo.SaveUser(ctx, user)
 	if err != nil {
-		return errors.Wrapf(err, errSaveProfile,userID)
+		return errors.Wrapf(err, errSaveProfile, userID)
 	}
 	return nil
 }
 
-
-func (i Interactor) Logout(id uint64,uuid string) error {
-	ctx, _ := context.WithTimeout(context.TODO(),i.ctxTimeoutS)
-	if err:=i.userAuthRepo.LogOff(ctx,id,uuid);err!=nil{
+func (i Interactor) Logout(id uint64, uuid string) error {
+	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
+	if err := i.userAuthRepo.LogOff(ctx, id, uuid); err != nil {
 		return errors.Wrap(err, errLogOff)
 	}
 	return nil
 }
 
-func (i Interactor) VerifyUser(token string, tokenType string) (sessionId,userId string,err error) {
+func (i Interactor) VerifyUser(token string, tokenType string) (sessionId, userId string, err error) {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
 	var secret []byte
-	var uuidKey=""
+	var uuidKey = ""
 	switch tokenType {
 	case "at":
-		secret= ACCESS_SECRET
-		uuidKey="access_uuid"
+		secret = ACCESS_SECRET
+		uuidKey = "access_uuid"
 	case "rt":
-		secret= REFRESH_SECRET
-		uuidKey="refresh_uuid"
+		secret = REFRESH_SECRET
+		uuidKey = "refresh_uuid"
 	default:
-		return "", "",errors.New("token type is invalid")
+		return "", "", errors.New("token type is invalid")
 	}
 
 	tk, err := verifyToken(token, secret)
 	if err != nil {
-		return "","", errors.Wrapf(err, errVerifyToken, token)
+		return "", "", errors.Wrapf(err, errVerifyToken, token)
 	}
 	claims, ok := tk.Claims.(jwt.MapClaims)
 	if ok && tk.Valid {
 
 		uuid, ok := claims[uuidKey].(string)
 		if !ok {
-			return "","", errors.Wrapf(errors.New("user uuid is absent"), errVerifyToken, token)
+			return "", "", errors.Wrapf(errors.New("user uuid is absent"), errVerifyToken, token)
 		}
-		userID,ok:=claims["user_id"].(float64)
-		if !ok{
-			return "","", errors.Wrapf(errors.New("user id is absent"), errVerifyToken, token)
+		userID, ok := claims["user_id"].(float64)
+		if !ok {
+			return "", "", errors.Wrapf(errors.New("user id is absent"), errVerifyToken, token)
 		}
 
-		dbUserID,isSignIn, err := i.userAuthRepo.IsSignIn(ctx, uuid)
+		dbUserID, isSignIn, err := i.userAuthRepo.IsSignIn(ctx, uuid)
 		if err != nil {
-			return "","", errors.Wrapf(err, errVerifyToken, token)
+			return "", "", errors.Wrapf(err, errVerifyToken, token)
 		}
 		if !isSignIn {
-			return "","", errors.Wrapf(errors.New("token is expired or not found"), errVerifyToken, token)
+			return "", "", errors.Wrapf(errors.New("token is expired or not found"), errVerifyToken, token)
 		}
-		if dbUserID!= uint64(userID) {
-			return "","", errors.Wrapf(errors.New("user id in db and in token is not equal"), errVerifyToken, token)
+		if dbUserID != uint64(userID) {
+			return "", "", errors.Wrapf(errors.New("user id in db and in token is not equal"), errVerifyToken, token)
 		}
-		return uuid,strconv.FormatUint(dbUserID,10),err
+		return uuid, strconv.FormatUint(dbUserID, 10), err
 	}
-	return "","", errors.New(errVerifyToken)
+	return "", "", errors.New(errVerifyToken)
 }
 
 func (i Interactor) Login(login, pass string) (at string, rt string, err error) {
 	ctx, _ := context.WithTimeout(context.TODO(), i.ctxTimeoutS)
 
-	id,phash, err := i.userRepo.GetUserAuth(ctx, login)
+	id, phash, err := i.userRepo.GetUserAuth(ctx, login)
 	if err != nil {
 		return "", "", errors.Wrapf(err, errLogin, login)
 	}
@@ -215,11 +255,11 @@ func (i Interactor) Login(login, pass string) (at string, rt string, err error) 
 		return "", "", errors.New(errLogin)
 	}
 
-	at,rt,err=i.SetTokenForUser(ctx, id)
+	at, rt, err = i.SetTokenForUser(ctx, id)
 	if err != nil {
 		return "", "", errors.New(errLogin)
 	}
-	log.Info("user %v logged in",login)
+	log.Info("user %v logged in", login)
 	return
 }
 
@@ -229,11 +269,11 @@ func (i Interactor) SetTokenForUser(ctx context.Context, userID uint64) (string,
 		return "", "", errors.New(errGenerateToken)
 	}
 
-	errAccess := i.userAuthRepo.SignIn(ctx, ts.AccessUuid, userID/*, ts.AtExpires*/)
+	errAccess := i.userAuthRepo.SignIn(ctx, ts.AccessUuid, userID /*, ts.AtExpires*/)
 	if errAccess != nil {
 		return "", "", errors.New(errGenerateToken)
 	}
-	errRefresh := i.userAuthRepo.SignIn(ctx, ts.RefreshUuid, userID/*, ts.RtExpires*/)
+	errRefresh := i.userAuthRepo.SignIn(ctx, ts.RefreshUuid, userID /*, ts.RtExpires*/)
 	if errRefresh != nil {
 		return "", "", errors.New(errGenerateToken)
 	}
@@ -247,18 +287,19 @@ func (i Interactor) SignUp(login, name, pass string) (at string, rt string, err 
 
 	ok, err := i.userRepo.Validate(ctx, login, pass)
 	if err != nil {
-		return "", "", errors.Wrapf(err, errSignUp,login)
+		return "", "", errors.Wrapf(err, errSignUp, login)
 	}
 	if !ok {
-		return "", "",fmt.Errorf(errSignUp,login)
+		return "", "", fmt.Errorf(errSignUp, login)
 	}
 
-	hash, err := hashAndSalt(pass)
+	hash, err :=
+		hashAndSalt(pass)
 	if err != nil {
 		return "", "", errors.Wrap(err, errSignUp)
 	}
 
-	id, err := i.userAuthRepo.Register(ctx, login,name, hash)
+	id, err := i.userAuthRepo.Register(ctx, login, name, hash)
 	if err != nil {
 		return "", "", errors.Wrap(err, errLogin)
 	}
@@ -268,17 +309,17 @@ func (i Interactor) SignUp(login, name, pass string) (at string, rt string, err 
 		return "", "", errors.Wrap(err, errLogin)
 	}
 
-	errAccess := i.userAuthRepo.SignIn(ctx, ts.AccessUuid, id/*, ts.AtExpires*/)
+	errAccess := i.userAuthRepo.SignIn(ctx, ts.AccessUuid, id /*, ts.AtExpires*/)
 	if errAccess != nil {
 		return "", "", errors.Wrap(err, errLogin)
 	}
-	errRefresh := i.userAuthRepo.SignIn(ctx, ts.RefreshUuid, id/*, ts.RtExpires*/)
+	errRefresh := i.userAuthRepo.SignIn(ctx, ts.RefreshUuid, id /*, ts.RtExpires*/)
 	if errRefresh != nil {
 		return "", "", errors.Wrap(err, errLogin)
 	}
 	at = base64.StdEncoding.EncodeToString([]byte(ts.AccessToken))
 	rt = base64.StdEncoding.EncodeToString([]byte(ts.RefreshToken))
-	log.Info("user %v signed up",login)
+	log.Info("user %v signed up", login)
 	return at, rt, nil
 }
 
@@ -332,7 +373,7 @@ func verifyToken(tokenString string, secret []byte) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-			return secret, nil
+		return secret, nil
 	})
 	if err != nil {
 		return nil, err
